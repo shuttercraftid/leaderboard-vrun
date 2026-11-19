@@ -82,8 +82,7 @@
                 <div>
                     <h1 class="font-extrabold text-lg sm:text-xl tracking-tight text-white flex items-center gap-2">
                         EMERGING VIRTUAL RUN
-                    </h1>
-                    <p class="text-xs text-gray-400 hidden sm:block">Virtual Running Challenge • Run Your Own Pace</p>
+                    </h1>                    
                 </div>
             </div>
 
@@ -109,7 +108,7 @@
             
             <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 relative z-10">
                 <div class="space-y-3 max-w-3xl">
-                    <h2 class="text-2xl sm:text-3xl font-black tracking-tight text-white">Target Goal: 42 Kilometers</h2>
+                    <h2 class="text-xl font-extrabold text-white flex items-center gap-2">Target Goal: 42 Kilometers</h2>
                     <p class="text-sm text-gray-300 leading-relaxed">
                         Run anytime, anywhere between <span class="text-white font-semibold">Nov 16 – Dec 13, 2026</span>. Complete target goal distance to earn your Finisher status on the official leaderboard.
                     </p>
@@ -230,7 +229,6 @@
                             <th class="py-3 px-4">Pace (min/km)</th>
                             <th class="py-3 px-4">Elevation (m)</th>
                             <th class="py-3 px-4">Moving Time</th>
-                            <th class="py-3 px-4">Type</th>
                             <th class="py-3 px-4 text-right">Sync Timestamp</th>
                         </tr>
                     </thead>
@@ -468,7 +466,7 @@
 
                             <div class="py-4 text-center space-y-1">
                                 <div class="text-lg font-black text-strava tracking-wide">Podium available</div>
-                                <p class="text-[11px] text-gray-400">Be the next runner to complete the 42 km target!</p>
+                                <p class="text-[11px] text-gray-400">Be the next runner to complete the distance target!</p>
                             </div>
 
                             <div class="w-full bg-darkbg rounded-full h-2 overflow-hidden border border-darkborder">
@@ -519,7 +517,7 @@
                             </div>
                         </td>
                         <td class="py-4 px-4 text-gray-300 font-medium">
-                            <span class="bg-darkbg border border-darkborder px-2.5 py-1 rounded-lg text-xs">${rider.total_activities || 1} runs</span>
+                            <span class="bg-darkbg border border-darkborder px-2.5 py-1 rounded-lg text-xs">${rider.total_activities || 1}</span>
                         </td>
                         <td class="py-4 px-4 text-right">
                             ${isFinisher 
@@ -536,18 +534,16 @@
             }).join('');
         }
 
-        // 4. LIVE ACTIVITY LOG TABLE RENDERER (INCLUDES PACE MIN/KM)
+        // 4. LIVE ACTIVITY LOG TABLE RENDERER (INCLUDES PACE MIN/KM IN ORANGE)
         function renderActivityLogTable(activityLog) {
             const tbody = document.getElementById('activityLogBody');
 
             if (!activityLog || activityLog.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-gray-400 text-xs">No activity log entries found.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-gray-400 text-xs">No activity log entries found.</td></tr>`;
                 return;
             }
 
             tbody.innerHTML = activityLog.map(log => {
-                const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(log.athlete_name)}&background=1E232D&color=fff`;
-
                 let formattedTimestamp = log.sync_timestamp || 'Recent';
                 try {
                     if (log.sync_timestamp) {
@@ -571,18 +567,12 @@
                 return `
                     <tr class="hover:bg-darkbg/40 transition-colors">
                         <td class="py-3 px-4">
-                            <div class="flex items-center space-x-2">
-                                <img src="${avatarUrl}" class="w-6 h-6 rounded-full border border-darkborder">
-                                ${nameHtml}
-                            </div>
+                            ${nameHtml}
                         </td>
                         <td class="py-3 px-4 font-bold text-strava text-xs font-mono">${log.distance_km} km</td>
-                        <td class="py-3 px-4 text-xs font-mono text-sky-400 font-bold">${paceVal}${paceVal !== '-' && !paceVal.toString().includes('min/km') ? ' /km' : ''}</td>
+                        <td class="py-3 px-4 text-xs font-mono text-strava font-bold">${paceVal}${paceVal !== '-' && !paceVal.toString().includes('min/km') ? ' /km' : ''}</td>
                         <td class="py-3 px-4 text-xs font-mono text-emerald-400">${log.elevation_m || 0} m</td>
                         <td class="py-3 px-4 text-xs font-mono text-gray-300">${cleanMovingTime}</td>
-                        <td class="py-3 px-4 text-xs text-gray-400">
-                            <span class="bg-darkbg px-2 py-0.5 rounded border border-darkborder">${log.type || 'Run'}</span>
-                        </td>
                         <td class="py-3 px-4 text-right text-xs font-mono text-gray-400">
                             ${formattedTimestamp}
                         </td>
