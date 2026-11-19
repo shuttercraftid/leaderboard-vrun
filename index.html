@@ -106,59 +106,61 @@
         <div class="bg-gradient-to-r from-darkcard via-darkcard to-gray-900 border border-darkborder rounded-2xl p-5 sm:p-6 relative overflow-hidden shadow-lg">
             <div class="absolute right-0 top-0 bottom-0 w-1/3 bg-gradient-to-l from-strava/10 to-transparent pointer-events-none hidden md:block"></div>
             
-            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 relative z-10">
-                <div class="space-y-3 max-w-3xl">
-                    <h2 class="text-xl font-extrabold text-white flex items-center gap-2">Target Goal: 42 Kilometers</h2>
-                    <p class="text-sm text-gray-300 leading-relaxed">
-                        Run anytime, anywhere between <span class="text-white font-semibold">Nov 16 – Dec 13, 2026</span>. Complete target goal distance to earn your Finisher status on the official leaderboard.
-                    </p>
+            <div class="space-y-3 relative z-10">
+                <p class="text-sm text-gray-300 leading-relaxed">
+                    Run anytime, anywhere between <span class="text-white font-semibold">Nov 16 – Dec 13, 2026</span>. Complete target goal distance to earn your Finisher status on the official leaderboard.
+                </p>
 
-                    <!-- Rules Box (3-Column Layout) -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pt-2">
-                        <div class="flex items-start space-x-3 bg-darkbg/80 p-3 rounded-xl border border-darkborder">
-                            <div class="text-strava text-lg pt-0.5"><i class="fa-brands fa-strava"></i></div>
-                            <div>
-                                <h4 class="text-xs font-bold uppercase text-gray-200">Rule 1: Record Activity</h4>
-                                <p class="text-xs text-gray-400">All runners must use Strava to record their running activities.</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start space-x-3 bg-darkbg/80 p-3 rounded-xl border border-darkborder">
-                            <div class="text-strava text-lg pt-0.5"><i class="fa-solid fa-users"></i></div>
-                            <div>
-                                <h4 class="text-xs font-bold uppercase text-gray-200">Rule 2: Join Strava Club</h4>
-                                <p class="text-xs text-gray-400">Join the official <a href="https://www.strava.com/clubs/2286430" target="_blank" rel="noopener noreferrer" class="text-strava hover:underline font-semibold inline-flex items-center gap-1">Emerging Running Club<i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i></a> for automatic verification.</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start space-x-3 bg-darkbg/80 p-3 rounded-xl border border-darkborder sm:col-span-2 lg:col-span-1">
-                            <div class="text-strava text-lg pt-0.5"><i class="fa-solid fa-shield-halved"></i></div>
-                            <div>
-                                <h4 class="text-xs font-bold uppercase text-gray-200">Rule 3: Don't Cheat</h4>
-                                <p class="text-xs text-gray-400">Don't use fake GPS and play fairness.</p>
-                            </div>
+                <!-- Rules Box (3-Column Layout) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pt-2">
+                    <div class="flex items-start space-x-3 bg-darkbg/80 p-3 rounded-xl border border-darkborder">
+                        <div class="text-strava text-lg pt-0.5"><i class="fa-brands fa-strava"></i></div>
+                        <div>
+                            <h4 class="text-xs font-bold uppercase text-gray-200">Rule 1: Record Activity</h4>
+                            <p class="text-xs text-gray-400">All runners must use Strava to record their running activities.</p>
                         </div>
                     </div>
-                </div>
-
-                <!-- Event Overview Stats Cards -->
-                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 w-full lg:w-auto">
-                    <div class="bg-darkbg p-4 rounded-xl border border-darkborder text-center">
-                        <span class="text-xs uppercase text-gray-400 font-medium">Participants</span>
-                        <div id="statTotalRiders" class="text-2xl font-black text-white mt-1">0</div>
-                        <span class="text-[10px] text-strava">Active Runners</span>
+                    <div class="flex items-start space-x-3 bg-darkbg/80 p-3 rounded-xl border border-darkborder">
+                        <div class="text-strava text-lg pt-0.5"><i class="fa-solid fa-users"></i></div>
+                        <div>
+                            <h4 class="text-xs font-bold uppercase text-gray-200">Rule 2: Join Strava Club</h4>
+                            <p class="text-xs text-gray-400">Join the official <a href="https://www.strava.com/clubs/2286430" target="_blank" rel="noopener noreferrer" class="text-strava hover:underline font-semibold inline-flex items-center gap-1">Emerging Running Club<i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i></a> for automatic verification.</p>
+                        </div>
                     </div>
-                    <div class="bg-darkbg p-4 rounded-xl border border-darkborder text-center">
-                        <span class="text-xs uppercase text-gray-400 font-medium">Total Distance</span>
-                        <div id="statTotalDistance" class="text-2xl font-black text-emerald-400 mt-1">0 <span class="text-xs font-normal">km</span></div>
-                        <span class="text-[10px] text-gray-400">Combined Logs</span>
-                    </div>
-                    <div class="bg-darkbg p-4 rounded-xl border border-darkborder text-center col-span-2 sm:col-span-1">
-                        <span class="text-xs uppercase text-gray-400 font-medium">Finishers</span>
-                        <div id="statFinishersCount" class="text-2xl font-black text-amber-400 mt-1">0</div>
-                        <span class="text-[10px] text-amber-400">Hit 42 km Target</span>
+                    <div class="flex items-start space-x-3 bg-darkbg/80 p-3 rounded-xl border border-darkborder sm:col-span-2 lg:col-span-1">
+                        <div class="text-strava text-lg pt-0.5"><i class="fa-solid fa-shield-halved"></i></div>
+                        <div>
+                            <h4 class="text-xs font-bold uppercase text-gray-200">Rule 3: Don't Cheat</h4>
+                            <p class="text-xs text-gray-400">Don't use fake GPS and play fairness.</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- EVENT OVERVIEW STATS CARDS (SEPARATE SECTION) -->
+        <section class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 w-full">
+            <div class="bg-darkcard p-4 rounded-xl border border-darkborder text-center shadow-md">
+                <span class="text-xs uppercase text-gray-400 font-medium">Target</span>
+                <div id="statTargetGoal" class="text-2xl font-black text-strava mt-1">42.0 <span class="text-xs font-normal">km</span></div>
+                <span class="text-[10px] text-gray-400">Event Target</span>
+            </div>
+            <div class="bg-darkcard p-4 rounded-xl border border-darkborder text-center shadow-md">
+                <span class="text-xs uppercase text-gray-400 font-medium">Participants</span>
+                <div id="statTotalRiders" class="text-2xl font-black text-white mt-1">0</div>
+                <span class="text-[10px] text-strava">Active Runners</span>
+            </div>
+            <div class="bg-darkcard p-4 rounded-xl border border-darkborder text-center shadow-md">
+                <span class="text-xs uppercase text-gray-400 font-medium">Total Distance</span>
+                <div id="statTotalDistance" class="text-2xl font-black text-emerald-400 mt-1">0 <span class="text-xs font-normal">km</span></div>
+                <span class="text-[10px] text-gray-400">Combined Logs</span>
+            </div>
+            <div class="bg-darkcard p-4 rounded-xl border border-darkborder text-center shadow-md">
+                <span class="text-xs uppercase text-gray-400 font-medium">Finishers</span>
+                <div id="statFinishersCount" class="text-2xl font-black text-amber-400 mt-1">0</div>
+                <span class="text-[10px] text-amber-400">Hit Target Goal</span>
+            </div>
+        </section>
 
         <!-- PODIUM FINISHER TRACKER -->
         <section class="space-y-4">
@@ -378,6 +380,10 @@
 
         // 1. OVERVIEW STATS
         function renderOverviewHeaderStats(leaderboard) {
+            const targetEl = document.getElementById('statTargetGoal');
+            if (targetEl) {
+                targetEl.innerHTML = `${TARGET_GOAL_KM.toFixed(1)} <span class="text-xs font-normal">km</span>`;
+            }
             document.getElementById('statTotalRiders').innerText = leaderboard.length;
             
             const grandTotalDist = leaderboard.reduce((sum, r) => sum + (parseFloat(r.total_distance_km) || 0), 0);
