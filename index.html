@@ -149,7 +149,7 @@
         <section class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 w-full">
             <div class="bg-darkcard p-4 rounded-xl border border-darkborder text-center shadow-md">
                 <span class="text-xs uppercase text-gray-400 font-medium">Target</span>
-                <div id="statTargetGoal" class="text-2xl font-black text-strava mt-1">42.0 <span class="text-xs font-normal">km</span></div>
+                <div id="statTargetGoal" class="text-2xl font-black text-strava mt-1">42.00 <span class="text-xs font-normal">km</span></div>
                 <span class="text-[10px] text-gray-400">Event Target</span>
             </div>
             <div class="bg-darkcard p-4 rounded-xl border border-darkborder text-center shadow-md">
@@ -159,7 +159,7 @@
             </div>
             <div class="bg-darkcard p-4 rounded-xl border border-darkborder text-center shadow-md">
                 <span class="text-xs uppercase text-gray-400 font-medium">Total Distance</span>
-                <div id="statTotalDistance" class="text-2xl font-black text-emerald-400 mt-1">0 <span class="text-xs font-normal">km</span></div>
+                <div id="statTotalDistance" class="text-2xl font-black text-emerald-400 mt-1">0.00 <span class="text-xs font-normal">km</span></div>
                 <span class="text-[10px] text-gray-400">Combined Logs</span>
             </div>
             <div class="bg-darkcard p-4 rounded-xl border border-darkborder text-center shadow-md">
@@ -219,7 +219,6 @@
                             <th class="py-3 px-4">Runner</th>
                             <th class="py-3 px-4">Distance Progress</th>
                             <th class="py-3 px-4">Runs</th>
-                            <th class="py-3 px-4 text-right">Status</th>
                         </tr>
                     </thead>
                     <tbody id="leaderboardBody" class="divide-y divide-darkborder text-sm">
@@ -273,21 +272,27 @@
     <script>
         // CONFIGURATION: Set your deployed Google Apps Script Web App URL here
         const APPS_SCRIPT_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwOBQ2L_yAQ34_LdSm6DrSqtEfVBQ_MdgO07MmayjDwZzYzajMYQRM1kVZHwWIPgc4K-Q/exec';
-        const TARGET_GOAL_KM = 42.0;
+        const TARGET_GOAL_KM = 42.00;
         const AUTO_REFRESH_INTERVAL_MS = 300000; // 5 Minutes
         let autoRefreshTimer = null;
 
+        // HELPER FUNCTION: FORMAT DISTANCE SAFELY TO 2 DECIMAL PLACES
+        function formatDistanceKm(val) {
+            const num = parseFloat(val);
+            return isNaN(num) ? '0.00' : num.toFixed(2);
+        }
+
         // FALLBACK INITIAL DATASET (WITH STRAVA ATHLETE IDS & RUNNING PACES)
         let sampleLeaderboard = [
-            { rank: 1, athlete_name: 'Marcus Vance', strava_id: '12345678', total_distance_km: 104.2, total_elev_gain_m: 850, total_moving_time: '08:15:30', total_activities: 8, pace_min_km: '04:45', progress: '100%', finisher_status: 'FINISHED' },
-            { rank: 2, athlete_name: 'Elena Rostova', strava_id: '87654321', total_distance_km: 101.5, total_elev_gain_m: 620, total_moving_time: '08:48:00', total_activities: 10, pace_min_km: '05:12', progress: '100%', finisher_status: 'FINISHED' },
-            { rank: 3, athlete_name: 'Julian Thorne', strava_id: '45678912', total_distance_km: 78.4, total_elev_gain_m: 410, total_moving_time: '07:11:12', total_activities: 7, pace_min_km: '05:30', progress: '78.4%', finisher_status: 'IN PROGRESS' }
+            { rank: 1, athlete_name: 'Marcus Vance', strava_id: '12345678', total_distance_km: 104.20, total_elev_gain_m: 850, total_moving_time: '08:15:30', total_activities: 8, pace_min_km: '04:45', progress: '100%', finisher_status: 'FINISHED' },
+            { rank: 2, athlete_name: 'Elena Rostova', strava_id: '87654321', total_distance_km: 101.50, total_elev_gain_m: 620, total_moving_time: '08:48:00', total_activities: 10, pace_min_km: '05:12', progress: '100%', finisher_status: 'FINISHED' },
+            { rank: 3, athlete_name: 'Julian Thorne', strava_id: '45678912', total_distance_km: 78.40, total_elev_gain_m: 410, total_moving_time: '07:11:12', total_activities: 7, pace_min_km: '05:30', progress: '78.4%', finisher_status: 'IN PROGRESS' }
         ];
 
         let sampleActivityLogs = [
-            { athlete_name: 'Elena Rostova', strava_id: '87654321', distance_km: 10.5, elevation_m: 65, moving_time: '00:54:36', pace_min_km: '05:12', type: 'Run', sync_timestamp: '2026-11-18T10:00:00.000Z' },
-            { athlete_name: 'Marcus Vance', strava_id: '12345678', distance_km: 12.8, elevation_m: 90, moving_time: '01:00:48', pace_min_km: '04:45', type: 'Run', sync_timestamp: '2026-11-18T09:30:00.000Z' },
-            { athlete_name: 'Julian Thorne', strava_id: '45678912', distance_km: 8.2, elevation_m: 45, moving_time: '00:45:06', pace_min_km: '05:30', type: 'Run', sync_timestamp: '2026-11-17T16:45:00.000Z' }
+            { athlete_name: 'Elena Rostova', strava_id: '87654321', distance_km: 10.50, elevation_m: 65, moving_time: '00:54:36', pace_min_km: '05:12', type: 'Run', sync_timestamp: '2026-11-18T10:00:00.000Z' },
+            { athlete_name: 'Marcus Vance', strava_id: '12345678', distance_km: 12.80, elevation_m: 90, moving_time: '01:00:48', pace_min_km: '04:45', type: 'Run', sync_timestamp: '2026-11-18T09:30:00.000Z' },
+            { athlete_name: 'Julian Thorne', strava_id: '45678912', distance_km: 8.20, elevation_m: 45, moving_time: '00:45:06', pace_min_km: '05:30', type: 'Run', sync_timestamp: '2026-11-17T16:45:00.000Z' }
         ];
 
         // HELPER FUNCTION: FORMAT TIME VALUES CLEANLY (HH:mm:ss)
@@ -385,22 +390,22 @@
             document.getElementById('syncStatusTag').innerText = `Updated: ${now.toLocaleTimeString()}`;
         }
 
-        // 1. OVERVIEW STATS
+        // 1. OVERVIEW STATS (FIXED FOR 2 DECIMAL PLACES)
         function renderOverviewHeaderStats(leaderboard) {
             const targetEl = document.getElementById('statTargetGoal');
             if (targetEl) {
-                targetEl.innerHTML = `${TARGET_GOAL_KM.toFixed(1)} <span class="text-xs font-normal">km</span>`;
+                targetEl.innerHTML = `${formatDistanceKm(TARGET_GOAL_KM)} <span class="text-xs font-normal">km</span>`;
             }
             document.getElementById('statTotalRiders').innerText = leaderboard.length;
             
             const grandTotalDist = leaderboard.reduce((sum, r) => sum + (parseFloat(r.total_distance_km) || 0), 0);
-            document.getElementById('statTotalDistance').innerHTML = `${grandTotalDist.toFixed(1)} <span class="text-xs font-normal">km</span>`;
+            document.getElementById('statTotalDistance').innerHTML = `${formatDistanceKm(grandTotalDist)} <span class="text-xs font-normal">km</span>`;
 
             const totalFinishers = leaderboard.filter(r => r.finisher_status === 'FINISHED' || parseFloat(r.total_distance_km) >= TARGET_GOAL_KM).length;
             document.getElementById('statFinishersCount').innerText = totalFinishers;
         }
 
-        // 2. PODIUM FINISHER TRACKER RENDERER (WITH RUNNING PACE)
+        // 2. PODIUM FINISHER TRACKER RENDERER (FIXED FOR 2 DECIMAL PLACES)
         function renderPodium(leaderboard) {
             const container = document.getElementById('podiumContainer');
 
@@ -452,7 +457,7 @@
                             <div class="grid grid-cols-3 gap-2 mt-5 pt-4 border-t border-darkborder/60">
                                 <div class="bg-darkbg/70 p-2 rounded-xl border border-darkborder text-center">
                                     <span class="text-[9px] uppercase text-gray-400 block font-medium">Distance</span>
-                                    <span class="text-xs font-bold text-white">${finisher.total_distance_km} km</span>
+                                    <span class="text-xs font-bold text-white">${formatDistanceKm(finisher.total_distance_km)} km</span>
                                 </div>
                                 <div class="bg-darkbg/70 p-2 rounded-xl border border-darkborder text-center">
                                     <span class="text-[9px] uppercase text-gray-400 block font-medium">Avg Pace</span>
@@ -491,7 +496,7 @@
             }).join('');
         }
 
-        // 3. LEADERBOARD TABLE RENDERER (STREAMLINED FOR RUNNING)
+        // 3. LEADERBOARD TABLE RENDERER (STATUS EMBEDDED UNDER ATHLETE NAME & STATUS COLUMN REMOVED)
         function renderLeaderboardTable(leaderboard) {
             const tbody = document.getElementById('leaderboardBody');
 
@@ -512,6 +517,14 @@
                         <i class="fa-brands fa-strava text-strava text-xs" title="Strava Club Member"></i>
                        </div>`;
 
+                const statusBadgeHtml = isFinisher
+                    ? `<span class="text-[11px] text-amber-400 font-bold flex items-center gap-1 mt-0.5">
+                        <i class="fa-solid fa-flag-checkered text-[10px]"></i> FINISHER
+                       </span>`
+                    : `<span class="text-[11px] text-gray-400 font-medium flex items-center gap-1 mt-0.5">
+                        IN PROGRESS
+                       </span>`;
+
                 return `
                     <tr class="hover:bg-darkbg/40 transition-colors">
                         <td class="py-4 px-4 font-bold text-gray-300">
@@ -519,10 +532,11 @@
                         </td>
                         <td class="py-4 px-4">
                             ${athleteNameHtml}
+                            ${statusBadgeHtml}
                         </td>
                         <td class="py-4 px-4 min-w-[200px]">
                             <div class="flex items-center justify-between text-xs mb-1 font-mono">
-                                <span class="font-bold text-white">${distance.toFixed(1)} / <span class="text-strava font-bold">${TARGET_GOAL_KM.toFixed(1)} km</span></span>
+                                <span class="font-bold text-white">${formatDistanceKm(distance)} / <span class="text-strava font-bold">${formatDistanceKm(TARGET_GOAL_KM)} km</span></span>
                                 <span class="text-[11px] ${isFinisher ? 'text-amber-400 font-bold' : 'text-gray-400'}">${progressPct}%</span>
                             </div>
                             <div class="w-full bg-darkbg rounded-full h-2 overflow-hidden border border-darkborder">
@@ -532,22 +546,12 @@
                         <td class="py-4 px-4 text-gray-300 font-medium">
                             <span class="bg-darkbg border border-darkborder px-2.5 py-1 rounded-lg text-xs">${rider.total_activities || 1}</span>
                         </td>
-                        <td class="py-4 px-4 text-right">
-                            ${isFinisher 
-                                ? `<span class="bg-amber-500/10 text-amber-400 border border-amber-500/30 text-[10px] font-bold px-2.5 py-1 rounded-full inline-flex items-center gap-1">
-                                    <i class="fa-solid fa-flag-checkered"></i> FINISHER
-                                   </span>`
-                                : `<span class="bg-darkbg text-gray-400 border border-darkborder text-[10px] font-medium px-2.5 py-1 rounded-full">
-                                    IN PROGRESS
-                                   </span>`
-                            }
-                        </td>
                     </tr>
                 `;
             }).join('');
         }
 
-        // 4. LIVE ACTIVITY LOG TABLE RENDERER (INCLUDES PACE MIN/KM IN ORANGE)
+        // 4. LIVE ACTIVITY LOG TABLE RENDERER (FIXED FOR 2 DECIMAL PLACES)
         function renderActivityLogTable(activityLog) {
             const tbody = document.getElementById('activityLogBody');
 
@@ -582,7 +586,7 @@
                         <td class="py-3 px-4">
                             ${nameHtml}
                         </td>
-                        <td class="py-3 px-4 font-bold text-strava text-xs font-mono">${log.distance_km} km</td>
+                        <td class="py-3 px-4 font-bold text-strava text-xs font-mono">${formatDistanceKm(log.distance_km)} km</td>
                         <td class="py-3 px-4 text-xs font-mono text-strava font-bold">${paceVal}${paceVal !== '-' && !paceVal.toString().includes('min/km') ? ' /km' : ''}</td>
                         <td class="py-3 px-4 text-xs font-mono text-emerald-400">${log.elevation_m || 0} m</td>
                         <td class="py-3 px-4 text-xs font-mono text-gray-300">${cleanMovingTime}</td>
