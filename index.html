@@ -154,18 +154,18 @@
             </div>
             <div class="bg-darkcard p-4 rounded-xl border border-darkborder text-center shadow-md">
                 <span class="text-xs uppercase text-gray-400 font-medium">Participants</span>
-                <div id="statTotalRiders" class="text-2xl font-black text-white mt-1">0</div>
-                <span class="text-[10px] text-strava">Active Runners</span>
+                <div id="statTotalRiders" class="text-2xl font-black text-strava mt-1">0</div>
+                <span class="text-[10px] text-gray-400">Active Runners</span>
             </div>
             <div class="bg-darkcard p-4 rounded-xl border border-darkborder text-center shadow-md">
                 <span class="text-xs uppercase text-gray-400 font-medium">Total Distance</span>
-                <div id="statTotalDistance" class="text-2xl font-black text-emerald-400 mt-1">0.00 <span class="text-xs font-normal">km</span></div>
+                <div id="statTotalDistance" class="text-2xl font-black text-strava mt-1">0.00 <span class="text-xs font-normal">km</span></div>
                 <span class="text-[10px] text-gray-400">Combined Logs</span>
             </div>
             <div class="bg-darkcard p-4 rounded-xl border border-darkborder text-center shadow-md">
                 <span class="text-xs uppercase text-gray-400 font-medium">Finishers</span>
-                <div id="statFinishersCount" class="text-2xl font-black text-amber-400 mt-1">0</div>
-                <span class="text-[10px] text-amber-400">Hit Target Goal</span>
+                <div id="statFinishersCount" class="text-2xl font-black text-strava mt-1">0</div>
+                <span class="text-[10px] text-gray-400">Hit Target Goal</span>
             </div>
         </section>
 
@@ -390,7 +390,7 @@
             document.getElementById('syncStatusTag').innerText = `Updated: ${now.toLocaleTimeString()}`;
         }
 
-        // 1. OVERVIEW STATS (FIXED FOR 2 DECIMAL PLACES)
+        // 1. OVERVIEW STATS
         function renderOverviewHeaderStats(leaderboard) {
             const targetEl = document.getElementById('statTargetGoal');
             if (targetEl) {
