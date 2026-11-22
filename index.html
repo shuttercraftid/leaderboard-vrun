@@ -222,7 +222,7 @@
                     <div class="flex items-center space-x-3 w-full sm:w-auto">
                         <div class="relative w-full sm:w-64">
                             <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-                            <input type="text" id="searchInput" onkeyup="filterData()" placeholder="Search runner..." class="w-full pl-9 pr-4 py-2 bg-darkbg border border-darkborder rounded-xl text-xs text-white focus:outline-none focus:border-strava transition-all">
+                            <input type="text" id="searchInput" onkeyup="filterLeaderboardData()" placeholder="Search runner..." class="w-full pl-9 pr-4 py-2 bg-darkbg border border-darkborder rounded-xl text-xs text-white focus:outline-none focus:border-strava transition-all">
                         </div>
                     </div>
                 </div>
@@ -273,6 +273,24 @@
                             <!-- Finish Time Leaderboard Rows rendered via JavaScript -->
                         </tbody>
                     </table>
+                </div>
+
+                <!-- LEADERBOARD PAGINATION CONTROLS FOOTER -->
+                <div class="p-4 border-t border-darkborder flex flex-col sm:flex-row items-center justify-between gap-3 bg-darkcard text-xs text-gray-400">
+                    <div id="leaderboardPaginationInfo">
+                        Showing 0 to 0 of 0 entries
+                    </div>
+                    <div class="flex items-center space-x-2" id="leaderboardPaginationControls">
+                        <button id="btnPrevLeaderboardPage" onclick="changeLeaderboardPage(-1)" disabled class="px-3 py-1.5 rounded-lg bg-darkbg border border-darkborder text-gray-400 disabled:opacity-40 disabled:cursor-not-allowed hover:text-white hover:border-strava transition-all flex items-center gap-1 font-semibold">
+                            <i class="fa-solid fa-chevron-left text-[10px]"></i> Previous
+                        </button>
+                        <div id="leaderboardPageNumbers" class="flex items-center space-x-1 font-mono font-bold">
+                            <!-- Rendered page buttons -->
+                        </div>
+                        <button id="btnNextLeaderboardPage" onclick="changeLeaderboardPage(1)" disabled class="px-3 py-1.5 rounded-lg bg-darkbg border border-darkborder text-gray-400 disabled:opacity-40 disabled:cursor-not-allowed hover:text-white hover:border-strava transition-all flex items-center gap-1 font-semibold">
+                            Next <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </section>
@@ -371,6 +389,13 @@
         const AUTO_REFRESH_INTERVAL_MS = 300000; // 5 Minutes
         let autoRefreshTimer = null;
         let finisherLogGlobal = [];
+
+        // LEADERBOARD STREAM GLOBAL STATE (SEARCH & 10-ITEM PAGINATION)
+        let globalLeaderboardRaw = [];
+        let currentActiveTab = 'leaderboard'; // 'leaderboard', 'distance', 'finishtime'
+        let currentLeaderboardPage = 1;
+        const LEADERBOARD_ITEMS_PER_PAGE = 10;
+        let processedTabDataset = [];
 
         // ACTIVITY STREAM GLOBAL STATE (FOR SEARCH & 10-ITEM PAGINATION)
         let globalActivityLogs = [];
@@ -534,12 +559,13 @@
 
         // MAIN RENDER CONTROLLER
         function renderDashboard(leaderboard, activityLog) {
-            renderOverviewHeaderStats(leaderboard);
-            renderPodium(leaderboard);
-            renderLeaderboardTable(leaderboard);
-            renderLeaderboardDistTable(leaderboard);
-            renderLeaderboardTimeTable(leaderboard);
+            globalLeaderboardRaw = leaderboard || [];
+            renderOverviewHeaderStats(globalLeaderboardRaw);
+            renderPodium(globalLeaderboardRaw);
             
+            // Process and render active Leaderboard tab with pagination
+            filterLeaderboardData();
+
             // Setup & Render Activity Log with Search + Pagination
             setupActivityLogData(activityLog);
             
@@ -666,11 +692,89 @@
             }).join('');
         }
 
+        // LEADERBOARD DATA FILTER & SORT CONTROLLER
+        function filterLeaderboardData() {
+            const query = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+            
+            // 1. Base Search Filter
+            let filtered = globalLeaderboardRaw.filter(rider => {
+                if (!query) return true;
+                const name = (rider.athlete_name || '').toLowerCase();
+                const status = (rider.finisher_status || '').toLowerCase();
+                const dist = formatDistanceKm(rider.total_distance_km).toLowerCase();
+                return name.includes(query) || status.includes(query) || dist.includes(query);
+            });
+
+            // 2. Sort depending on active tab
+            if (currentActiveTab === 'leaderboard') {
+                // Main Standings (by Rank)
+                processedTabDataset = [...filtered].sort((a, b) => (parseInt(a.rank) || 999) - (parseInt(b.rank) || 999));
+            } else if (currentActiveTab === 'distance') {
+                // By Distance
+                processedTabDataset = [...filtered].sort((a, b) => {
+                    const distA = parseFloat(a.total_distance_km) || 0;
+                    const distB = parseFloat(b.total_distance_km) || 0;
+                    if (Math.abs(distB - distA) >= 0.01) {
+                        return distB - distA;
+                    }
+                    return hmsToSecs(a.total_moving_time) - hmsToSecs(b.total_moving_time);
+                });
+            } else if (currentActiveTab === 'finishtime') {
+                // By Finish Time
+                processedTabDataset = [...filtered].sort((a, b) => {
+                    const isFinA = a.finisher_status === 'FINISHED' || parseFloat(a.total_distance_km) >= TARGET_GOAL_KM;
+                    const isFinB = b.finisher_status === 'FINISHED' || parseFloat(b.total_distance_km) >= TARGET_GOAL_KM;
+
+                    if (isFinA && isFinB) {
+                        const tsA = getAthleteFinishTimestamp(a);
+                        const tsB = getAthleteFinishTimestamp(b);
+                        const timeA = tsA ? new Date(tsA).getTime() : Infinity;
+                        const timeB = tsB ? new Date(tsB).getTime() : Infinity;
+                        if (timeA !== timeB) return timeA - timeB;
+                        return parseFloat(b.total_distance_km) - parseFloat(a.total_distance_km);
+                    }
+                    if (isFinA) return -1;
+                    if (isFinB) return 1;
+                    return parseFloat(b.total_distance_km) - parseFloat(a.total_distance_km);
+                });
+            }
+
+            renderCurrentLeaderboardTab();
+        }
+
+        // RENDER ACTIVE LEADERBOARD TAB WITH 10-ITEM PAGINATION
+        function renderCurrentLeaderboardTab() {
+            const totalItems = processedTabDataset.length;
+            const totalPages = Math.ceil(totalItems / LEADERBOARD_ITEMS_PER_PAGE) || 1;
+
+            if (currentLeaderboardPage > totalPages) currentLeaderboardPage = totalPages;
+            if (currentLeaderboardPage < 1) currentLeaderboardPage = 1;
+
+            const startIndex = (currentLeaderboardPage - 1) * LEADERBOARD_ITEMS_PER_PAGE;
+            const endIndex = Math.min(startIndex + LEADERBOARD_ITEMS_PER_PAGE, totalItems);
+            const pageData = processedTabDataset.slice(startIndex, endIndex);
+
+            if (currentActiveTab === 'leaderboard') {
+                renderLeaderboardTable(pageData);
+            } else if (currentActiveTab === 'distance') {
+                renderLeaderboardDistTable(pageData);
+            } else if (currentActiveTab === 'finishtime') {
+                renderLeaderboardTimeTable(pageData);
+            }
+
+            updateLeaderboardPaginationControls(totalItems > 0 ? startIndex + 1 : 0, endIndex, totalItems, totalPages);
+        }
+
         // 3. TAB 1: MAIN LEADERBOARD TABLE RENDERER
-        function renderLeaderboardTable(leaderboard) {
+        function renderLeaderboardTable(leaderboardPageData) {
             const tbody = document.getElementById('leaderboardBody');
 
-            tbody.innerHTML = leaderboard.map((rider, index) => {
+            if (!leaderboardPageData || leaderboardPageData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" class="py-8 text-center text-gray-400 text-xs">No runners found.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = leaderboardPageData.map((rider, index) => {
                 const rank = parseInt(rider.rank) || (index + 1);
                 const isFinisher = rider.finisher_status === 'FINISHED' || parseFloat(rider.total_distance_km) >= TARGET_GOAL_KM;
                 const distance = parseFloat(rider.total_distance_km) || 0;
@@ -742,21 +846,16 @@
         }
 
         // 4. TAB 2: LEADERBOARD BY DISTANCE TABLE RENDERER
-        function renderLeaderboardDistTable(leaderboard) {
+        function renderLeaderboardDistTable(leaderboardPageData) {
             const tbody = document.getElementById('leaderboardDistBody');
 
-            // Sort athletes purely by Total Distance (km) in descending order
-            const distSortedList = [...leaderboard].sort((a, b) => {
-                const distA = parseFloat(a.total_distance_km) || 0;
-                const distB = parseFloat(b.total_distance_km) || 0;
-                if (Math.abs(distB - distA) >= 0.01) {
-                    return distB - distA;
-                }
-                return hmsToSecs(a.total_moving_time) - hmsToSecs(b.total_moving_time);
-            });
+            if (!leaderboardPageData || leaderboardPageData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" class="py-8 text-center text-gray-400 text-xs">No runners found.</td></tr>`;
+                return;
+            }
 
-            tbody.innerHTML = distSortedList.map((rider, index) => {
-                const rank = index + 1;
+            tbody.innerHTML = leaderboardPageData.map((rider, index) => {
+                const rank = (currentLeaderboardPage - 1) * LEADERBOARD_ITEMS_PER_PAGE + index + 1;
                 const isFinisher = rider.finisher_status === 'FINISHED' || parseFloat(rider.total_distance_km) >= TARGET_GOAL_KM;
                 const distance = parseFloat(rider.total_distance_km) || 0;
                 const stravaId = rider.strava_id || rider.athlete_id || '';
@@ -809,31 +908,16 @@
         }
 
         // 5. TAB 3: LEADERBOARD BY FINISH TIME TABLE RENDERER
-        function renderLeaderboardTimeTable(leaderboard) {
+        function renderLeaderboardTimeTable(leaderboardPageData) {
             const tbody = document.getElementById('leaderboardTimeBody');
 
-            // Sort athletes by Finish Time timestamp chronologically, then by distance
-            const timeSortedList = [...leaderboard].sort((a, b) => {
-                const isFinA = a.finisher_status === 'FINISHED' || parseFloat(a.total_distance_km) >= TARGET_GOAL_KM;
-                const isFinB = b.finisher_status === 'FINISHED' || parseFloat(b.total_distance_km) >= TARGET_GOAL_KM;
+            if (!leaderboardPageData || leaderboardPageData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" class="py-8 text-center text-gray-400 text-xs">No runners found.</td></tr>`;
+                return;
+            }
 
-                if (isFinA && isFinB) {
-                    const tsA = getAthleteFinishTimestamp(a);
-                    const tsB = getAthleteFinishTimestamp(b);
-                    const timeA = tsA ? new Date(tsA).getTime() : Infinity;
-                    const timeB = tsB ? new Date(tsB).getTime() : Infinity;
-                    if (timeA !== timeB) return timeA - timeB;
-                    return parseFloat(b.total_distance_km) - parseFloat(a.total_distance_km);
-                }
-
-                if (isFinA) return -1;
-                if (isFinB) return 1;
-
-                return parseFloat(b.total_distance_km) - parseFloat(a.total_distance_km);
-            });
-
-            tbody.innerHTML = timeSortedList.map((rider, index) => {
-                const rank = index + 1;
+            tbody.innerHTML = leaderboardPageData.map((rider, index) => {
+                const rank = (currentLeaderboardPage - 1) * LEADERBOARD_ITEMS_PER_PAGE + index + 1;
                 const isFinisher = rider.finisher_status === 'FINISHED' || parseFloat(rider.total_distance_km) >= TARGET_GOAL_KM;
                 const stravaId = rider.strava_id || rider.athlete_id || '';
                 const totalRuns = rider.total_activities || rider.activities || 1;
@@ -884,6 +968,41 @@
                     </tr>
                 `;
             }).join('');
+        }
+
+        // UPDATE LEADERBOARD PAGINATION CONTROLS STATE & BUTTONS
+        function updateLeaderboardPaginationControls(startItem, endItem, totalItems, totalPages) {
+            const infoEl = document.getElementById('leaderboardPaginationInfo');
+            const prevBtn = document.getElementById('btnPrevLeaderboardPage');
+            const nextBtn = document.getElementById('btnNextLeaderboardPage');
+            const pageNumbersEl = document.getElementById('leaderboardPageNumbers');
+
+            infoEl.innerText = totalItems > 0 ? `Showing ${startItem} to ${endItem} of ${totalItems} entries` : `Showing 0 to 0 of 0 entries`;
+
+            prevBtn.disabled = currentLeaderboardPage <= 1 || totalItems === 0;
+            nextBtn.disabled = currentLeaderboardPage >= totalPages || totalItems === 0;
+
+            let pageButtonsHtml = '';
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === currentLeaderboardPage) {
+                    pageButtonsHtml += `<button class="w-7 h-7 rounded-lg bg-strava text-white text-xs shadow flex items-center justify-center font-bold">${i}</button>`;
+                } else {
+                    pageButtonsHtml += `<button onclick="goToLeaderboardPage(${i})" class="w-7 h-7 rounded-lg bg-darkbg border border-darkborder text-gray-400 hover:text-white hover:border-strava text-xs flex items-center justify-center transition-all">${i}</button>`;
+                }
+            }
+            pageNumbersEl.innerHTML = pageButtonsHtml;
+        }
+
+        // CHANGE LEADERBOARD PAGE (PREVIOUS / NEXT)
+        function changeLeaderboardPage(delta) {
+            currentLeaderboardPage += delta;
+            renderCurrentLeaderboardTab();
+        }
+
+        // GO TO SPECIFIC LEADERBOARD PAGE
+        function goToLeaderboardPage(pageNum) {
+            currentLeaderboardPage = pageNum;
+            renderCurrentLeaderboardTab();
         }
 
         // 6. SETUP ACTIVITY LOG DATA & INITIALIZE PAGINATION
@@ -1023,6 +1142,9 @@
 
         // TAB SWITCHING (LEADERBOARD STREAM TABS ONLY)
         function switchTab(tabName) {
+            currentActiveTab = tabName;
+            currentLeaderboardPage = 1; // Reset to page 1 on tab switch
+
             const leaderboardTab = document.getElementById('leaderboardTab');
             const leaderboardDistTab = document.getElementById('leaderboardDistTab');
             const leaderboardTimeTab = document.getElementById('leaderboardTimeTab');
@@ -1059,26 +1181,56 @@
                 tabBtnLeaderboardDist.className = inactiveBtnClass;
                 tabBtnLeaderboardTime.className = activeBtnClass;
             }
+
+            filterLeaderboardData();
         }
 
         // LEADERBOARD STREAM SEARCH FILTER
-        function filterData() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
+        function filterLeaderboardData() {
+            currentLeaderboardPage = 1; // Reset to page 1 on search
+            const query = (document.getElementById('searchInput').value || '').toLowerCase().trim();
             
-            const lbRows = document.querySelectorAll('#leaderboardBody tr');
-            lbRows.forEach(row => {
-                row.style.display = row.innerText.toLowerCase().includes(query) ? '' : 'none';
+            // 1. Base Search Filter
+            let filtered = globalLeaderboardRaw.filter(rider => {
+                if (!query) return true;
+                const name = (rider.athlete_name || '').toLowerCase();
+                const status = (rider.finisher_status || '').toLowerCase();
+                const dist = formatDistanceKm(rider.total_distance_km).toLowerCase();
+                return name.includes(query) || status.includes(query) || dist.includes(query);
             });
 
-            const lbDistRows = document.querySelectorAll('#leaderboardDistBody tr');
-            lbDistRows.forEach(row => {
-                row.style.display = row.innerText.toLowerCase().includes(query) ? '' : 'none';
-            });
+            // 2. Sort depending on active tab
+            if (currentActiveTab === 'leaderboard') {
+                processedTabDataset = [...filtered].sort((a, b) => (parseInt(a.rank) || 999) - (parseInt(b.rank) || 999));
+            } else if (currentActiveTab === 'distance') {
+                processedTabDataset = [...filtered].sort((a, b) => {
+                    const distA = parseFloat(a.total_distance_km) || 0;
+                    const distB = parseFloat(b.total_distance_km) || 0;
+                    if (Math.abs(distB - distA) >= 0.01) {
+                        return distB - distA;
+                    }
+                    return hmsToSecs(a.total_moving_time) - hmsToSecs(b.total_moving_time);
+                });
+            } else if (currentActiveTab === 'finishtime') {
+                processedTabDataset = [...filtered].sort((a, b) => {
+                    const isFinA = a.finisher_status === 'FINISHED' || parseFloat(a.total_distance_km) >= TARGET_GOAL_KM;
+                    const isFinB = b.finisher_status === 'FINISHED' || parseFloat(b.total_distance_km) >= TARGET_GOAL_KM;
 
-            const lbTimeRows = document.querySelectorAll('#leaderboardTimeBody tr');
-            lbTimeRows.forEach(row => {
-                row.style.display = row.innerText.toLowerCase().includes(query) ? '' : 'none';
-            });
+                    if (isFinA && isFinB) {
+                        const tsA = getAthleteFinishTimestamp(a);
+                        const tsB = getAthleteFinishTimestamp(b);
+                        const timeA = tsA ? new Date(tsA).getTime() : Infinity;
+                        const timeB = tsB ? new Date(tsB).getTime() : Infinity;
+                        if (timeA !== timeB) return timeA - timeB;
+                        return parseFloat(b.total_distance_km) - parseFloat(a.total_distance_km);
+                    }
+                    if (isFinA) return -1;
+                    if (isFinB) return 1;
+                    return parseFloat(b.total_distance_km) - parseFloat(a.total_distance_km);
+                });
+            }
+
+            renderCurrentLeaderboardTab();
         }
 
         // TOAST NOTIFICATION
