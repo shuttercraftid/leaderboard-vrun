@@ -189,60 +189,156 @@
             </div>
         </section>
 
-        <!-- LEADERBOARD & ACTIVITY LOG TABS SECTION -->
-        <section class="bg-darkcard border border-darkborder rounded-2xl overflow-hidden shadow-lg space-y-0">
-            <!-- Navigation Header for Tabs & Search -->
-            <div class="p-4 sm:p-5 border-b border-darkborder flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-darkcard">
-                <div class="flex space-x-2 bg-darkbg p-1.5 rounded-xl border border-darkborder w-full sm:w-auto">
-                    <button id="tabBtnLeaderboard" onclick="switchTab('leaderboard')" class="flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all bg-strava text-white shadow">
-                        <i class="fa-solid fa-list-ol mr-1"></i> Leaderboard
-                    </button>
-                    <button id="tabBtnActivityLog" onclick="switchTab('activity')" class="flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs sm:text-sm font-bold text-gray-400 hover:text-white transition-all">
-                        <i class="fa-solid fa-stream mr-1"></i> Activity Stream
-                    </button>
+        <!-- LEADERBOARD STREAM SECTION HEADER -->
+        <section class="space-y-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-xl font-extrabold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-list-ol text-strava"></i> LEADERBOARD STREAM
+                    </h3>
+                    <p class="text-xs text-gray-400">Live participant standings and accumulated metrics</p>
                 </div>
+            </div>
 
-                <div class="flex items-center space-x-3 w-full sm:w-auto">
-                    <div class="relative w-full sm:w-64">
-                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-                        <input type="text" id="searchInput" onkeyup="filterData()" placeholder="Search runner..." class="w-full pl-9 pr-4 py-2 bg-darkbg border border-darkborder rounded-xl text-xs text-white focus:outline-none focus:border-strava transition-all">
+            <!-- MAIN BOX CONTAINER FOR TABS & TABLES -->
+            <div class="bg-darkcard border border-darkborder rounded-2xl overflow-hidden shadow-lg space-y-0">
+                <!-- Navigation Header for Tabs & Search -->
+                <div class="p-4 sm:p-5 border-b border-darkborder flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-darkcard">
+                    <div class="flex space-x-1.5 sm:space-x-2 bg-darkbg p-1.5 rounded-xl border border-darkborder w-full sm:w-auto overflow-x-auto">
+                        <!-- Tab 1: Main -->
+                        <button id="tabBtnLeaderboard" onclick="switchTab('leaderboard')" class="flex-1 sm:flex-none px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all bg-strava text-white shadow whitespace-nowrap">
+                            <i class="fa-solid fa-flag-checkered mr-1"></i> Main
+                        </button>
+                        <!-- Tab 2: by Distance -->
+                        <button id="tabBtnLeaderboardDist" onclick="switchTab('distance')" class="flex-1 sm:flex-none px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold text-gray-400 hover:text-white transition-all whitespace-nowrap">
+                            <i class="fa-solid fa-route mr-1"></i> by Distance
+                        </button>
+                        <!-- Tab 3: by Finish Time -->
+                        <button id="tabBtnLeaderboardTime" onclick="switchTab('finishtime')" class="flex-1 sm:flex-none px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold text-gray-400 hover:text-white transition-all whitespace-nowrap">
+                            <i class="fa-regular fa-clock mr-1"></i> by Finish Time
+                        </button>
+                    </div>
+
+                    <div class="flex items-center space-x-3 w-full sm:w-auto">
+                        <div class="relative w-full sm:w-64">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                            <input type="text" id="searchInput" onkeyup="filterData()" placeholder="Search runner..." class="w-full pl-9 pr-4 py-2 bg-darkbg border border-darkborder rounded-xl text-xs text-white focus:outline-none focus:border-strava transition-all">
+                        </div>
                     </div>
                 </div>
+
+                <!-- TAB 1: MAIN LEADERBOARD TABLE -->
+                <div id="leaderboardTab" class="block overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-darkbg/50 text-gray-400 text-[11px] font-semibold uppercase tracking-wider border-b border-darkborder">
+                                <th class="py-3 px-4 w-12 text-center">Rank</th>
+                                <th class="py-3 px-4">Runner</th>
+                                <th class="py-3 px-4">Distance Progress</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboardBody" class="divide-y divide-darkborder text-sm">
+                            <!-- Main Leaderboard Rows rendered via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- TAB 2: LEADERBOARD BY DISTANCE TABLE -->
+                <div id="leaderboardDistTab" class="hidden overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-darkbg/50 text-gray-400 text-[11px] font-semibold uppercase tracking-wider border-b border-darkborder">
+                                <th class="py-3 px-4 w-12 text-center">Rank</th>
+                                <th class="py-3 px-4">Runner</th>
+                                <th class="py-3 px-4">Distance Progress</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboardDistBody" class="divide-y divide-darkborder text-sm">
+                            <!-- Distance Leaderboard Rows rendered via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- TAB 3: LEADERBOARD BY FINISH TIME TABLE -->
+                <div id="leaderboardTimeTab" class="hidden overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-darkbg/50 text-gray-400 text-[11px] font-semibold uppercase tracking-wider border-b border-darkborder">
+                                <th class="py-3 px-4 w-12 text-center">Rank</th>
+                                <th class="py-3 px-4">Runner</th>
+                                <th class="py-3 px-4">FINISH TIME</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboardTimeBody" class="divide-y divide-darkborder text-sm">
+                            <!-- Finish Time Leaderboard Rows rendered via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ACTIVITY STREAM SECTION -->
+        <section class="space-y-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-xl font-extrabold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-stream text-strava"></i> ACTIVITY STREAM
+                    </h3>
+                    <p class="text-xs text-gray-400">Real-time log of recent runner sync activities</p>
+                </div>
             </div>
 
-            <!-- TAB 1: LEADERBOARD TABLE -->
-            <div id="leaderboardTab" class="block overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-darkbg/50 text-gray-400 text-[11px] font-semibold uppercase tracking-wider border-b border-darkborder">
-                            <th class="py-3 px-4 w-12 text-center">Rank</th>
-                            <th class="py-3 px-4">Runner</th>
-                            <th class="py-3 px-4">Distance Progress</th>
-                        </tr>
-                    </thead>
-                    <tbody id="leaderboardBody" class="divide-y divide-darkborder text-sm">
-                        <!-- Leaderboard Rows rendered via JavaScript -->
-                    </tbody>
-                </table>
-            </div>
+            <!-- ACTIVITY STREAM BOX CONTAINER WITH SEARCH & PAGINATION -->
+            <div class="bg-darkcard border border-darkborder rounded-2xl overflow-hidden shadow-lg space-y-0">
+                <!-- Activity Stream Header Controls: Search Input -->
+                <div class="p-4 sm:p-5 border-b border-darkborder flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-darkcard">
+                    <div class="text-xs font-bold text-gray-300 flex items-center gap-2">
+                        <i class="fa-solid fa-clock-rotate-left text-strava"></i> Recent Activity Logs
+                    </div>
+                    <div class="flex items-center space-x-3 w-full sm:w-auto">
+                        <div class="relative w-full sm:w-64">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                            <input type="text" id="activitySearchInput" onkeyup="filterActivityData()" placeholder="Search activity..." class="w-full pl-9 pr-4 py-2 bg-darkbg border border-darkborder rounded-xl text-xs text-white focus:outline-none focus:border-strava transition-all">
+                        </div>
+                    </div>
+                </div>
 
-            <!-- TAB 2: LIVE ACTIVITY LOG TABLE -->
-            <div id="activityLogTab" class="hidden overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-darkbg/50 text-gray-400 text-[11px] font-semibold uppercase tracking-wider border-b border-darkborder">
-                            <th class="py-3 px-4">Athlete Name</th>
-                            <th class="py-3 px-4">Distance (km)</th>
-                            <th class="py-3 px-4">Pace (min/km)</th>
-                            <th class="py-3 px-4">Elevation (m)</th>
-                            <th class="py-3 px-4">Moving Time</th>
-                            <th class="py-3 px-4 text-right">Sync Timestamp</th>
-                        </tr>
-                    </thead>
-                    <tbody id="activityLogBody" class="divide-y divide-darkborder text-sm">
-                        <!-- Activity Feed Rows rendered via JavaScript -->
-                    </tbody>
-                </table>
+                <!-- ACTIVITY TABLE STREAM CONTAINER -->
+                <div id="activityLogTab" class="block overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-darkbg/50 text-gray-400 text-[11px] font-semibold uppercase tracking-wider border-b border-darkborder">
+                                <th class="py-3 px-4">Athlete Name</th>
+                                <th class="py-3 px-4">Distance (km)</th>
+                                <th class="py-3 px-4">Pace (min/km)</th>
+                                <th class="py-3 px-4">Elevation (m)</th>
+                                <th class="py-3 px-4">Moving Time</th>
+                                <th class="py-3 px-4 text-right">Sync Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody id="activityLogBody" class="divide-y divide-darkborder text-sm">
+                            <!-- Activity Feed Rows rendered via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- PAGINATION CONTROLS FOOTER -->
+                <div class="p-4 border-t border-darkborder flex flex-col sm:flex-row items-center justify-between gap-3 bg-darkcard text-xs text-gray-400">
+                    <div id="activityPaginationInfo">
+                        Showing 0 to 0 of 0 entries
+                    </div>
+                    <div class="flex items-center space-x-2" id="activityPaginationControls">
+                        <button id="btnPrevActivityPage" onclick="changeActivityPage(-1)" disabled class="px-3 py-1.5 rounded-lg bg-darkbg border border-darkborder text-gray-400 disabled:opacity-40 disabled:cursor-not-allowed hover:text-white hover:border-strava transition-all flex items-center gap-1 font-semibold">
+                            <i class="fa-solid fa-chevron-left text-[10px]"></i> Previous
+                        </button>
+                        <div id="activityPageNumbers" class="flex items-center space-x-1 font-mono font-bold">
+                            <!-- Rendered page buttons -->
+                        </div>
+                        <button id="btnNextActivityPage" onclick="changeActivityPage(1)" disabled class="px-3 py-1.5 rounded-lg bg-darkbg border border-darkborder text-gray-400 disabled:opacity-40 disabled:cursor-not-allowed hover:text-white hover:border-strava transition-all flex items-center gap-1 font-semibold">
+                            Next <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -276,17 +372,27 @@
         let autoRefreshTimer = null;
         let finisherLogGlobal = [];
 
+        // ACTIVITY STREAM GLOBAL STATE (FOR SEARCH & 10-ITEM PAGINATION)
+        let globalActivityLogs = [];
+        let filteredActivityLogs = [];
+        let currentActivityPage = 1;
+        const ACTIVITY_ITEMS_PER_PAGE = 10;
+
         // HELPER FUNCTION: FORMAT DISTANCE SAFELY TO 2 DECIMAL PLACES
         function formatDistanceKm(val) {
             const num = parseFloat(val);
             return isNaN(num) ? '0.00' : num.toFixed(2);
         }
 
-        // HELPER FUNCTION: FORMAT DATE & TIME CLEANLY
+        // HELPER FUNCTION: FORMAT DATE & TIME CLEANLY WITH FLEXIBLE ISO/DATETIME PARSING
         function formatDateTime(timestampStr) {
             if (!timestampStr || timestampStr === '-' || timestampStr === 'N/A') return '-';
             try {
-                const d = new Date(timestampStr);
+                let cleanStr = timestampStr.toString().trim();
+                if (cleanStr.includes(' ') && !cleanStr.includes('T')) {
+                    cleanStr = cleanStr.replace(' ', 'T');
+                }
+                const d = new Date(cleanStr);
                 if (isNaN(d.getTime())) return timestampStr;
                 const datePart = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
                 const timePart = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -296,17 +402,19 @@
             }
         }
 
-        // FALLBACK INITIAL DATASET (RUNNING PACE MIN/KM & FINISH TIMESTAMPS)
+        // FALLBACK INITIAL DATASET
         let sampleLeaderboard = [
             { rank: 1, athlete_name: 'Marcus Vance', strava_id: '12345678', total_distance_km: 48.20, total_elev_gain_m: 350, total_moving_time: '04:01:00', total_activities: 5, avg_pace_min_km: '5:00', progress: '100%', finisher_status: 'FINISHED', finish_timestamp: '2026-11-18T14:30:00.000Z' },
-            { rank: 2, athlete_name: 'Elena Rostova', strava_id: '87654321', total_distance_km: 42.50, total_elev_gain_m: 220, total_moving_time: '03:53:45', total_activities: 4, avg_pace_min_km: '5:30', progress: '100%', finisher_status: 'FINISHED', finish_timestamp: '2026-11-19T09:15:00.000Z' },
+            { rank: 2, athlete_name: 'Elena Rostova', strava_id: '87654321', total_distance_km: 62.50, total_elev_gain_m: 220, total_moving_time: '05:30:45', total_activities: 6, avg_pace_min_km: '5:18', progress: '100%', finisher_status: 'FINISHED', finish_timestamp: '2026-11-19T09:15:00.000Z' },
             { rank: 3, athlete_name: 'Julian Thorne', strava_id: '45678912', total_distance_km: 31.40, total_elev_gain_m: 180, total_moving_time: '03:08:24', total_activities: 3, avg_pace_min_km: '6:00', progress: '74.8%', finisher_status: 'IN PROGRESS' }
         ];
 
         let sampleActivityLogs = [
             { athlete_name: 'Elena Rostova', strava_id: '87654321', distance_km: 10.50, elevation_m: 65, moving_time: '00:57:45', avg_pace_min_km: '5:30', type: 'Run', sync_timestamp: '2026-11-18T10:00:00.000Z' },
             { athlete_name: 'Marcus Vance', strava_id: '12345678', distance_km: 12.80, elevation_m: 90, moving_time: '01:04:00', avg_pace_min_km: '5:00', type: 'Run', sync_timestamp: '2026-11-18T09:30:00.000Z' },
-            { athlete_name: 'Julian Thorne', strava_id: '45678912', distance_km: 8.20, elevation_m: 45, moving_time: '00:49:12', avg_pace_min_km: '6:00', type: 'Run', sync_timestamp: '2026-11-17T16:45:00.000Z' }
+            { athlete_name: 'Julian Thorne', strava_id: '45678912', distance_km: 8.20, elevation_m: 45, moving_time: '00:49:12', avg_pace_min_km: '6:00', type: 'Run', sync_timestamp: '2026-11-17T16:45:00.000Z' },
+            { athlete_name: 'Elena Rostova', strava_id: '87654321', distance_km: 12.00, elevation_m: 75, moving_time: '01:05:00', avg_pace_min_km: '5:25', type: 'Run', sync_timestamp: '2026-11-16T08:20:00.000Z' },
+            { athlete_name: 'Marcus Vance', strava_id: '12345678', distance_km: 15.00, elevation_m: 110, moving_time: '01:15:00', avg_pace_min_km: '5:00', type: 'Run', sync_timestamp: '2026-11-15T17:10:00.000Z' }
         ];
 
         // HELPER FUNCTION: FORMAT TIME VALUES CLEANLY (HH:mm:ss)
@@ -358,6 +466,13 @@
                 }
             }
             return '';
+        }
+
+        // HELPER TO CONVERT HH:MM:SS TO SECONDS FOR TIE-BREAKING SORT
+        function hmsToSecs(str) {
+            if (!str || typeof str !== 'string' || !str.includes(':')) return 0;
+            const parts = str.split(':').map(Number);
+            return parts.length === 3 ? parts[0] * 3600 + parts[1] * 60 + parts[2] : parts[0] * 60 + parts[1];
         }
 
         // INIT APP & AUTO-REFRESH TIMER
@@ -422,7 +537,11 @@
             renderOverviewHeaderStats(leaderboard);
             renderPodium(leaderboard);
             renderLeaderboardTable(leaderboard);
-            renderActivityLogTable(activityLog);
+            renderLeaderboardDistTable(leaderboard);
+            renderLeaderboardTimeTable(leaderboard);
+            
+            // Setup & Render Activity Log with Search + Pagination
+            setupActivityLogData(activityLog);
             
             const now = new Date();
             document.getElementById('syncStatusTag').innerText = `Updated: ${now.toLocaleTimeString()}`;
@@ -443,7 +562,7 @@
             document.getElementById('statFinishersCount').innerText = totalFinishers;
         }
 
-        // 2. PODIUM FINISHER TRACKER RENDERER (RUNNING PACE MIN/KM)
+        // 2. PODIUM FINISHER TRACKER RENDERER
         function renderPodium(leaderboard) {
             const container = document.getElementById('podiumContainer');
 
@@ -547,7 +666,7 @@
             }).join('');
         }
 
-        // 3. LEADERBOARD TABLE RENDERER
+        // 3. TAB 1: MAIN LEADERBOARD TABLE RENDERER
         function renderLeaderboardTable(leaderboard) {
             const tbody = document.getElementById('leaderboardBody');
 
@@ -561,7 +680,6 @@
                 const rawFinishTs = getAthleteFinishTimestamp(rider);
                 const formattedFinishTime = formatDateTime(rawFinishTs);
 
-                // Line 1 RUNNER: Single line with truncation on mobile screens to prevent wrapping
                 const athleteNameHtml = stravaId
                     ? `<a href="https://www.strava.com/athletes/${stravaId}" target="_blank" rel="noopener noreferrer" class="font-bold text-white hover:text-strava transition-colors flex items-center gap-1.5 group truncate max-w-[130px] sm:max-w-[200px] inline-block align-bottom">
                         <span class="truncate">${rider.athlete_name}</span>
@@ -572,7 +690,6 @@
                         <i class="fa-brands fa-strava text-strava text-xs shrink-0" title="Strava Club Member"></i>
                        </div>`;
 
-                // Line 2 RUNNER: Status Badge
                 const statusBadgeHtml = isFinisher
                     ? `<span class="text-[10px] text-amber-400 font-bold inline-flex items-center gap-1">
                         <i class="fa-solid fa-flag-checkered text-[9px]"></i> FINISHER
@@ -581,12 +698,10 @@
                         IN PROGRESS
                        </span>`;
 
-                // Line 3 RUNNER: Total Run Quantity
                 const totalRunsHtml = `<span class="text-[11px] text-gray-400 font-medium flex items-center gap-1">
                     <i class="fa-solid fa-person-running text-[10px] text-strava/70"></i> ${totalRuns} ${totalRuns === 1 ? 'Run' : 'Runs'}
                 </span>`;
 
-                // Line 3 DISTANCE PROGRESS: Completion Date/Time
                 const finishTimeLineHtml = isFinisher && formattedFinishTime !== '-'
                     ? `<div class="flex items-center justify-between text-[11px] font-mono text-amber-400 font-bold">
                         <span>Finish Time:</span>
@@ -602,7 +717,6 @@
                         <td class="py-4 px-4 font-bold text-gray-300 text-center">
                             ${rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `#${rank}`}
                         </td>
-                        <!-- COLUMN 1: RUNNER (3 LINES) -->
                         <td class="py-4 px-4">
                             <div class="flex flex-col space-y-1">
                                 <div>${athleteNameHtml}</div>
@@ -610,19 +724,15 @@
                                 <div>${totalRunsHtml}</div>
                             </div>
                         </td>
-                        <!-- COLUMN 2: DISTANCE PROGRESS (3 LINES) -->
                         <td class="py-4 px-4 min-w-[220px]">
                             <div class="flex flex-col space-y-1.5">
-                                <!-- Line 1: Distance fraction and % -->
                                 <div class="flex items-center justify-between text-xs font-mono">
                                     <span class="font-bold text-white">${formatDistanceKm(distance)} / <span class="text-strava font-bold">${formatDistanceKm(TARGET_GOAL_KM)} km</span></span>
                                     <span class="text-[11px] ${isFinisher ? 'text-amber-400 font-bold' : 'text-gray-400'}">${progressPct}%</span>
                                 </div>
-                                <!-- Line 2: Progress bar -->
                                 <div class="w-full bg-darkbg rounded-full h-2 overflow-hidden border border-darkborder">
                                     <div class="h-full ${isFinisher ? 'bg-gradient-to-r from-amber-500 to-strava' : 'bg-strava'} transition-all duration-500" style="width: ${progressPct}%"></div>
                                 </div>
-                                <!-- Line 3: Finish Time -->
                                 ${finishTimeLineHtml}
                             </div>
                         </td>
@@ -631,26 +741,222 @@
             }).join('');
         }
 
-        // 4. LIVE ACTIVITY LOG TABLE RENDERER
-        function renderActivityLogTable(activityLog) {
-            const tbody = document.getElementById('activityLogBody');
+        // 4. TAB 2: LEADERBOARD BY DISTANCE TABLE RENDERER
+        function renderLeaderboardDistTable(leaderboard) {
+            const tbody = document.getElementById('leaderboardDistBody');
 
+            // Sort athletes purely by Total Distance (km) in descending order
+            const distSortedList = [...leaderboard].sort((a, b) => {
+                const distA = parseFloat(a.total_distance_km) || 0;
+                const distB = parseFloat(b.total_distance_km) || 0;
+                if (Math.abs(distB - distA) >= 0.01) {
+                    return distB - distA;
+                }
+                return hmsToSecs(a.total_moving_time) - hmsToSecs(b.total_moving_time);
+            });
+
+            tbody.innerHTML = distSortedList.map((rider, index) => {
+                const rank = index + 1;
+                const isFinisher = rider.finisher_status === 'FINISHED' || parseFloat(rider.total_distance_km) >= TARGET_GOAL_KM;
+                const distance = parseFloat(rider.total_distance_km) || 0;
+                const stravaId = rider.strava_id || rider.athlete_id || '';
+                const totalRuns = rider.total_activities || rider.activities || 1;
+
+                const athleteNameHtml = stravaId
+                    ? `<a href="https://www.strava.com/athletes/${stravaId}" target="_blank" rel="noopener noreferrer" class="font-bold text-white hover:text-strava transition-colors inline-flex items-center gap-1.5 group max-w-[150px] xs:max-w-[200px] sm:max-w-[280px] whitespace-nowrap overflow-hidden">
+                        <span class="truncate">${rider.athlete_name}</span>
+                        <i class="fa-brands fa-strava text-strava text-xs group-hover:scale-110 transition-transform shrink-0" title="View Strava Profile"></i>
+                       </a>`
+                    : `<div class="font-bold text-white inline-flex items-center gap-1.5 max-w-[150px] xs:max-w-[200px] sm:max-w-[280px] whitespace-nowrap overflow-hidden">
+                        <span class="truncate">${rider.athlete_name}</span>
+                        <i class="fa-brands fa-strava text-strava text-xs shrink-0" title="Strava Club Member"></i>
+                       </div>`;
+
+                const statusBadgeHtml = isFinisher
+                    ? `<span class="text-[10px] text-amber-400 font-bold inline-flex items-center gap-1">
+                        <i class="fa-solid fa-flag-checkered text-[9px]"></i> FINISHER
+                       </span>`
+                    : `<span class="text-[10px] text-gray-400 font-medium inline-flex items-center gap-1">
+                        IN PROGRESS
+                       </span>`;
+
+                const totalRunsHtml = `<span class="text-[11px] text-gray-400 font-medium flex items-center gap-1">
+                    <i class="fa-solid fa-person-running text-[10px] text-strava/70"></i> Total Runs: ${totalRuns}
+                </span>`;
+
+                return `
+                    <tr class="hover:bg-darkbg/40 transition-colors">
+                        <td class="py-4 px-4 font-bold text-gray-300 text-center">
+                            ${rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `#${rank}`}
+                        </td>
+                        <td class="py-4 px-4">
+                            <div class="flex flex-col space-y-1">
+                                <div>${athleteNameHtml}</div>
+                                <div>${statusBadgeHtml}</div>
+                            </div>
+                        </td>
+                        <td class="py-4 px-4">
+                            <div class="flex flex-col space-y-1">
+                                <div class="font-bold text-strava text-sm sm:text-base font-mono">
+                                    ${formatDistanceKm(distance)} km
+                                </div>
+                                <div>${totalRunsHtml}</div>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // 5. TAB 3: LEADERBOARD BY FINISH TIME TABLE RENDERER
+        function renderLeaderboardTimeTable(leaderboard) {
+            const tbody = document.getElementById('leaderboardTimeBody');
+
+            // Sort athletes by Finish Time timestamp chronologically, then by distance
+            const timeSortedList = [...leaderboard].sort((a, b) => {
+                const isFinA = a.finisher_status === 'FINISHED' || parseFloat(a.total_distance_km) >= TARGET_GOAL_KM;
+                const isFinB = b.finisher_status === 'FINISHED' || parseFloat(b.total_distance_km) >= TARGET_GOAL_KM;
+
+                if (isFinA && isFinB) {
+                    const tsA = getAthleteFinishTimestamp(a);
+                    const tsB = getAthleteFinishTimestamp(b);
+                    const timeA = tsA ? new Date(tsA).getTime() : Infinity;
+                    const timeB = tsB ? new Date(tsB).getTime() : Infinity;
+                    if (timeA !== timeB) return timeA - timeB;
+                    return parseFloat(b.total_distance_km) - parseFloat(a.total_distance_km);
+                }
+
+                if (isFinA) return -1;
+                if (isFinB) return 1;
+
+                return parseFloat(b.total_distance_km) - parseFloat(a.total_distance_km);
+            });
+
+            tbody.innerHTML = timeSortedList.map((rider, index) => {
+                const rank = index + 1;
+                const isFinisher = rider.finisher_status === 'FINISHED' || parseFloat(rider.total_distance_km) >= TARGET_GOAL_KM;
+                const stravaId = rider.strava_id || rider.athlete_id || '';
+                const totalRuns = rider.total_activities || rider.activities || 1;
+                const rawFinishTs = getAthleteFinishTimestamp(rider);
+                const formattedFinishTime = formatDateTime(rawFinishTs);
+
+                const athleteNameHtml = stravaId
+                    ? `<a href="https://www.strava.com/athletes/${stravaId}" target="_blank" rel="noopener noreferrer" class="font-bold text-white hover:text-strava transition-colors inline-flex items-center gap-1.5 group max-w-[150px] xs:max-w-[200px] sm:max-w-[280px] whitespace-nowrap overflow-hidden">
+                        <span class="truncate">${rider.athlete_name}</span>
+                        <i class="fa-brands fa-strava text-strava text-xs group-hover:scale-110 transition-transform shrink-0" title="View Strava Profile"></i>
+                       </a>`
+                    : `<div class="font-bold text-white inline-flex items-center gap-1.5 max-w-[150px] xs:max-w-[200px] sm:max-w-[280px] whitespace-nowrap overflow-hidden">
+                        <span class="truncate">${rider.athlete_name}</span>
+                        <i class="fa-brands fa-strava text-strava text-xs shrink-0" title="Strava Club Member"></i>
+                       </div>`;
+
+                const statusBadgeHtml = isFinisher
+                    ? `<span class="text-[10px] text-amber-400 font-bold inline-flex items-center gap-1">
+                        <i class="fa-solid fa-flag-checkered text-[9px]"></i> FINISHER
+                       </span>`
+                    : `<span class="text-[10px] text-gray-400 font-medium inline-flex items-center gap-1">
+                        IN PROGRESS
+                       </span>`;
+
+                const totalRunsHtml = `<span class="text-[11px] text-gray-400 font-medium flex items-center gap-1">
+                    <i class="fa-solid fa-person-running text-[10px] text-strava/70"></i> Total Runs: ${totalRuns}
+                </span>`;
+
+                return `
+                    <tr class="hover:bg-darkbg/40 transition-colors">
+                        <td class="py-4 px-4 font-bold text-gray-300 text-center">
+                            ${rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `#${rank}`}
+                        </td>
+                        <td class="py-4 px-4">
+                            <div class="flex flex-col space-y-1">
+                                <div>${athleteNameHtml}</div>
+                                <div>${statusBadgeHtml}</div>
+                            </div>
+                        </td>
+                        <td class="py-4 px-4">
+                            <div class="flex flex-col space-y-1">
+                                <div class="font-bold text-strava text-sm sm:text-base font-mono">
+                                    ${formattedFinishTime}
+                                </div>
+                                <div>${totalRunsHtml}</div>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // 6. SETUP ACTIVITY LOG DATA & INITIALIZE PAGINATION
+        function setupActivityLogData(activityLog) {
             if (!activityLog || activityLog.length === 0) {
+                globalActivityLogs = [];
+                filteredActivityLogs = [];
+            } else {
+                globalActivityLogs = [...activityLog]
+                    .filter(log => log && log.athlete_name && log.athlete_name.toString().trim() !== '')
+                    .sort((a, b) => {
+                        const getTime = (ts) => {
+                            if (!ts) return 0;
+                            let cleanStr = ts.toString().trim();
+                            if (cleanStr.includes(' ') && !cleanStr.includes('T')) {
+                                cleanStr = cleanStr.replace(' ', 'T');
+                            }
+                            const parsed = new Date(cleanStr).getTime();
+                            return isNaN(parsed) ? 0 : parsed;
+                        };
+                        return getTime(b.sync_timestamp || b.synctimestamp || b.timestamp) - getTime(a.sync_timestamp || a.synctimestamp || a.timestamp);
+                    });
+            }
+
+            // Apply search filter and reset page to 1
+            filterActivityData();
+        }
+
+        // ACTIVITY STREAM SEARCH FILTER HANDLER
+        function filterActivityData() {
+            const query = (document.getElementById('activitySearchInput').value || '').toLowerCase().trim();
+            
+            if (!query) {
+                filteredActivityLogs = [...globalActivityLogs];
+            } else {
+                filteredActivityLogs = globalActivityLogs.filter(log => {
+                    const name = (log.athlete_name || '').toLowerCase();
+                    const dist = formatDistanceKm(log.distance_km || log.distance).toLowerCase();
+                    const movingTime = formatTimeValue(log.moving_time).toLowerCase();
+                    const timeStamp = formatDateTime(log.sync_timestamp || log.synctimestamp || log.timestamp || '').toLowerCase();
+                    return name.includes(query) || dist.includes(query) || movingTime.includes(query) || timeStamp.includes(query);
+                });
+            }
+
+            currentActivityPage = 1;
+            renderActivityLogTable();
+        }
+
+        // RENDER PAGINATED ACTIVITY LOG TABLE
+        function renderActivityLogTable() {
+            const tbody = document.getElementById('activityLogBody');
+            const totalItems = filteredActivityLogs.length;
+
+            if (totalItems === 0) {
                 tbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-gray-400 text-xs">No activity log entries found.</td></tr>`;
+                updateActivityPaginationControls(0, 0, 0, 0);
                 return;
             }
 
-            tbody.innerHTML = activityLog.map(log => {
-                let formattedTimestamp = log.sync_timestamp || 'Recent';
-                try {
-                    if (log.sync_timestamp) {
-                        const d = new Date(log.sync_timestamp);
-                        formattedTimestamp = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    }
-                } catch (e) {}
+            const totalPages = Math.ceil(totalItems / ACTIVITY_ITEMS_PER_PAGE);
+            if (currentActivityPage > totalPages) currentActivityPage = totalPages;
+            if (currentActivityPage < 1) currentActivityPage = 1;
+
+            const startIndex = (currentActivityPage - 1) * ACTIVITY_ITEMS_PER_PAGE;
+            const endIndex = Math.min(startIndex + ACTIVITY_ITEMS_PER_PAGE, totalItems);
+            const pageData = filteredActivityLogs.slice(startIndex, endIndex);
+
+            tbody.innerHTML = pageData.map(log => {
+                const rawTimestamp = log.sync_timestamp || log.synctimestamp || log.timestamp || '';
+                const formattedTimestamp = formatDateTime(rawTimestamp);
 
                 const cleanMovingTime = formatTimeValue(log.moving_time);
-                const distKm = parseFloat(log.distance_km) || 0;
+                const distKm = parseFloat(log.distance_km || log.distance) || 0;
                 const paceVal = getPaceMinKm(cleanMovingTime, distKm, log.avg_pace_min_km || log.avg_speed_km_h || log.avg_speed_kmh);
                 const stravaId = log.strava_id || log.athlete_id || '';
 
@@ -666,9 +972,9 @@
                         <td class="py-3 px-4">
                             ${nameHtml}
                         </td>
-                        <td class="py-3 px-4 font-bold text-strava text-xs font-mono">${formatDistanceKm(log.distance_km)} km</td>
+                        <td class="py-3 px-4 font-bold text-strava text-xs font-mono">${formatDistanceKm(distKm)} km</td>
                         <td class="py-3 px-4 text-xs font-mono text-strava font-bold">${paceVal} /km</td>
-                        <td class="py-3 px-4 text-xs font-mono text-emerald-400">${log.elevation_m || 0} m</td>
+                        <td class="py-3 px-4 text-xs font-mono text-emerald-400">${log.elevation_m || log.elevation || 0} m</td>
                         <td class="py-3 px-4 text-xs font-mono text-gray-300">${cleanMovingTime}</td>
                         <td class="py-3 px-4 text-right text-xs font-mono text-gray-400">
                             ${formattedTimestamp}
@@ -676,31 +982,86 @@
                     </tr>
                 `;
             }).join('');
+
+            updateActivityPaginationControls(startIndex + 1, endIndex, totalItems, totalPages);
         }
 
-        // TAB SWITCHING
+        // UPDATE PAGINATION CONTROL STATE & BUTTONS
+        function updateActivityPaginationControls(startItem, endItem, totalItems, totalPages) {
+            const infoEl = document.getElementById('activityPaginationInfo');
+            const prevBtn = document.getElementById('btnPrevActivityPage');
+            const nextBtn = document.getElementById('btnNextActivityPage');
+            const pageNumbersEl = document.getElementById('activityPageNumbers');
+
+            infoEl.innerText = totalItems > 0 ? `Showing ${startItem} to ${endItem} of ${totalItems} entries` : `Showing 0 to 0 of 0 entries`;
+
+            prevBtn.disabled = currentActivityPage <= 1 || totalItems === 0;
+            nextBtn.disabled = currentActivityPage >= totalPages || totalItems === 0;
+
+            let pageButtonsHtml = '';
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === currentActivityPage) {
+                    pageButtonsHtml += `<button class="w-7 h-7 rounded-lg bg-strava text-white text-xs shadow flex items-center justify-center font-bold">${i}</button>`;
+                } else {
+                    pageButtonsHtml += `<button onclick="goToActivityPage(${i})" class="w-7 h-7 rounded-lg bg-darkbg border border-darkborder text-gray-400 hover:text-white hover:border-strava text-xs flex items-center justify-center transition-all">${i}</button>`;
+                }
+            }
+            pageNumbersEl.innerHTML = pageButtonsHtml;
+        }
+
+        // CHANGE ACTIVITY PAGE (PREVIOUS / NEXT)
+        function changeActivityPage(delta) {
+            currentActivityPage += delta;
+            renderActivityLogTable();
+        }
+
+        // GO TO SPECIFIC ACTIVITY PAGE
+        function goToActivityPage(pageNum) {
+            currentActivityPage = pageNum;
+            renderActivityLogTable();
+        }
+
+        // TAB SWITCHING (LEADERBOARD STREAM TABS ONLY)
         function switchTab(tabName) {
             const leaderboardTab = document.getElementById('leaderboardTab');
-            const activityLogTab = document.getElementById('activityLogTab');
+            const leaderboardDistTab = document.getElementById('leaderboardDistTab');
+            const leaderboardTimeTab = document.getElementById('leaderboardTimeTab');
+            
             const tabBtnLeaderboard = document.getElementById('tabBtnLeaderboard');
-            const tabBtnActivityLog = document.getElementById('tabBtnActivityLog');
+            const tabBtnLeaderboardDist = document.getElementById('tabBtnLeaderboardDist');
+            const tabBtnLeaderboardTime = document.getElementById('tabBtnLeaderboardTime');
+
+            const activeBtnClass = "flex-1 sm:flex-none px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all bg-strava text-white shadow whitespace-nowrap";
+            const inactiveBtnClass = "flex-1 sm:flex-none px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold text-gray-400 hover:text-white transition-all whitespace-nowrap";
 
             if (tabName === 'leaderboard') {
                 leaderboardTab.classList.remove('hidden');
-                activityLogTab.classList.add('hidden');
+                leaderboardDistTab.classList.add('hidden');
+                leaderboardTimeTab.classList.add('hidden');
                 
-                tabBtnLeaderboard.className = "flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all bg-strava text-white shadow";
-                tabBtnActivityLog.className = "flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs sm:text-sm font-bold text-gray-400 hover:text-white transition-all";
-            } else {
+                tabBtnLeaderboard.className = activeBtnClass;
+                tabBtnLeaderboardDist.className = inactiveBtnClass;
+                tabBtnLeaderboardTime.className = inactiveBtnClass;
+            } else if (tabName === 'distance') {
                 leaderboardTab.classList.add('hidden');
-                activityLogTab.classList.remove('hidden');
+                leaderboardDistTab.classList.remove('hidden');
+                leaderboardTimeTab.classList.add('hidden');
 
-                tabBtnActivityLog.className = "flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all bg-strava text-white shadow";
-                tabBtnLeaderboard.className = "flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs sm:text-sm font-bold text-gray-400 hover:text-white transition-all";
+                tabBtnLeaderboard.className = inactiveBtnClass;
+                tabBtnLeaderboardDist.className = activeBtnClass;
+                tabBtnLeaderboardTime.className = inactiveBtnClass;
+            } else if (tabName === 'finishtime') {
+                leaderboardTab.classList.add('hidden');
+                leaderboardDistTab.classList.add('hidden');
+                leaderboardTimeTab.classList.remove('hidden');
+
+                tabBtnLeaderboard.className = inactiveBtnClass;
+                tabBtnLeaderboardDist.className = inactiveBtnClass;
+                tabBtnLeaderboardTime.className = activeBtnClass;
             }
         }
 
-        // SEARCH FILTER
+        // LEADERBOARD STREAM SEARCH FILTER
         function filterData() {
             const query = document.getElementById('searchInput').value.toLowerCase();
             
@@ -709,8 +1070,13 @@
                 row.style.display = row.innerText.toLowerCase().includes(query) ? '' : 'none';
             });
 
-            const actRows = document.querySelectorAll('#activityLogBody tr');
-            actRows.forEach(row => {
+            const lbDistRows = document.querySelectorAll('#leaderboardDistBody tr');
+            lbDistRows.forEach(row => {
+                row.style.display = row.innerText.toLowerCase().includes(query) ? '' : 'none';
+            });
+
+            const lbTimeRows = document.querySelectorAll('#leaderboardTimeBody tr');
+            lbTimeRows.forEach(row => {
                 row.style.display = row.innerText.toLowerCase().includes(query) ? '' : 'none';
             });
         }
