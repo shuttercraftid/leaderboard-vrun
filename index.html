@@ -12,15 +12,24 @@
             theme: {
                 extend: {
                     colors: {
-                        strava: {
-                            DEFAULT: '#FC4C02',
-                            hover: '#E04300',
-                            light: 'rgba(252, 76, 2, 0.15)',
-                            border: 'rgba(252, 76, 2, 0.4)'
+                        navy: {
+                            DEFAULT: '#0B132B',
+                            light: '#1C2541',
+                            card: '#131C35',
+                            border: '#1E294B'
                         },
-                        darkbg: '#0F1115',
-                        darkcard: '#161920',
-                        darkborder: '#262A34'
+                        smartblue: {
+                            DEFAULT: '#3A86FF',
+                            hover: '#2563EB',
+                            light: 'rgba(58, 134, 255, 0.12)',
+                            border: 'rgba(58, 134, 255, 0.3)'
+                        },
+                        chartreuse: {
+                            DEFAULT: '#D7FE03',
+                            hover: '#C2E502',
+                            light: 'rgba(215, 254, 3, 0.12)',
+                            border: 'rgba(215, 254, 3, 0.3)'
+                        }
                     },
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
@@ -38,62 +47,58 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #0F1115;
+            background-color: #0B132B;
             color: #E2E8F0;
         }
         ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
         }
         ::-webkit-scrollbar-track {
-            background: #161920;
+            background: #0B132B;
         }
         ::-webkit-scrollbar-thumb {
-            background: #2D3342;
+            background: #1C2541;
             border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #FC4C02;
+            background: #3A86FF;
         }
         .podium-card {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.25s ease-in-out;
         }
         .podium-card:hover {
-            transform: translateY(-4px);
+            transform: translateY(-2px);
         }
         @keyframes pulse-glow {
             0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(1.2); }
+            50% { opacity: 0.4; transform: scale(1.15); }
         }
         .animate-pulse-glow {
             animation: pulse-glow 2s infinite ease-in-out;
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between selection:bg-strava selection:text-white">
+<body class="min-h-screen flex flex-col justify-between selection:bg-chartreuse selection:text-navy">
 
     <!-- TOP NAV BAR -->
-    <header class="bg-darkcard border-b border-darkborder sticky top-0 z-30 shadow-md">
+    <header class="bg-navy-card border-b border-navy-border sticky top-0 z-30 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <div class="bg-strava p-2 rounded-xl text-white font-bold text-xl flex items-center justify-center w-10 h-10 shadow-lg">
-                    <i class="fa-solid fa-person-running"></i>
-                </div>
-                <div>
-                    <h1 class="font-extrabold text-lg sm:text-xl tracking-tight text-white flex items-center gap-2">
-                        EMERGING VIRTUAL RUN
-                    </h1>                    
-                </div>
+            <div class="flex items-center space-x-2.5">
+                <i class="fa-solid fa-person-running text-smartblue text-base sm:text-lg"></i>
+                <h1 class="font-extrabold text-base sm:text-lg tracking-tight text-white flex items-center gap-1.5">
+                    EMERGING VIRTUAL <span class="text-chartreuse">RUN</span>
+                </h1>                    
             </div>
 
-            <!-- Header Right Controls: Live Status & Clean Refresh Button -->
-            <div class="flex items-center space-x-2">
-                <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold uppercase tracking-wider">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse-glow"></span>
+            <!-- Header Right Controls: Live Status & Icon-Only Refresh Button -->
+            <div class="flex items-center space-x-3">
+                <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-semibold tracking-wide">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse-glow"></span>
                     LIVE
                 </div>
-                <button onclick="fetchLiveBackendData(true)" title="Refresh Sync" class="text-gray-400 hover:text-white p-2 rounded-lg hover:bg-darkbg transition-colors active:scale-95">
-                    <i class="fa-solid fa-rotate text-sm"></i>
+                <button onclick="fetchLiveBackendData(true)" title="Refresh Sync" class="text-gray-400 hover:text-chartreuse text-xs font-semibold p-1.5 transition-colors flex items-center justify-center">
+                    <i class="fa-solid fa-rotate text-xs"></i>
                 </button>
             </div>
         </div>
@@ -103,42 +108,40 @@
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full space-y-6">
 
         <!-- STRAVA RULES & BANNER -->
-        <div class="bg-gradient-to-r from-darkcard via-darkcard to-gray-900 border border-darkborder rounded-2xl p-5 sm:p-6 relative overflow-hidden shadow-lg">
-            <div class="absolute right-0 top-0 bottom-0 w-1/3 bg-gradient-to-l from-strava/10 to-transparent pointer-events-none hidden md:block"></div>
-            
+        <div class="bg-navy-card border border-navy-border rounded-xl p-5 relative overflow-hidden">
             <div class="space-y-3 relative z-10">
-                <p class="text-sm text-gray-300 leading-relaxed font-medium">
+                <p class="text-xs sm:text-sm text-gray-300 leading-relaxed font-normal">
                     Run Anytime, Anywhere • Run Your Own Pace • Complete target goal distance to earn your Finisher status on the official leaderboard
                 </p>
 
                 <!-- Rules & Event Info Box (4-Column Layout) -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-2">
-                    <div class="flex items-start space-x-3 bg-darkbg/80 p-3 rounded-xl border border-darkborder">
-                        <div class="text-strava text-lg pt-0.5"><i class="fa-solid fa-calendar-days"></i></div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-1">
+                    <div class="flex items-start space-x-2.5 bg-navy/60 p-2.5 rounded-lg border border-navy-border/80">
+                        <div class="text-smartblue text-sm pt-0.5"><i class="fa-solid fa-calendar-days"></i></div>
                         <div>
-                            <h4 class="text-xs font-bold uppercase text-gray-200">Activity Period</h4>
-                            <p class="text-xs text-gray-400">Nov 16 – Dec 13, 2026</p>
+                            <h4 class="text-[11px] font-bold uppercase text-chartreuse">Activity Period</h4>
+                            <p class="text-[11px] text-gray-400">Nov 16 – Dec 13, 2026</p>
                         </div>
                     </div>
-                    <div class="flex items-start space-x-3 bg-darkbg/80 p-3 rounded-xl border border-darkborder">
-                        <div class="text-strava text-lg pt-0.5"><i class="fa-brands fa-strava"></i></div>
+                    <div class="flex items-start space-x-2.5 bg-navy/60 p-2.5 rounded-lg border border-navy-border/80">
+                        <div class="text-smartblue text-sm pt-0.5"><i class="fa-brands fa-strava"></i></div>
                         <div>
-                            <h4 class="text-xs font-bold uppercase text-gray-200">Rule 1: Record Activity</h4>
-                            <p class="text-xs text-gray-400">All runners must use Strava to record their running/walking activities.</p>
+                            <h4 class="text-[11px] font-bold uppercase text-chartreuse">Rule 1: Record Activity</h4>
+                            <p class="text-[11px] text-gray-400">All runners must use Strava to record their running/walking activities.</p>
                         </div>
                     </div>
-                    <div class="flex items-start space-x-3 bg-darkbg/80 p-3 rounded-xl border border-darkborder">
-                        <div class="text-strava text-lg pt-0.5"><i class="fa-solid fa-users"></i></div>
+                    <div class="flex items-start space-x-2.5 bg-navy/60 p-2.5 rounded-lg border border-navy-border/80">
+                        <div class="text-smartblue text-sm pt-0.5"><i class="fa-solid fa-users"></i></div>
                         <div>
-                            <h4 class="text-xs font-bold uppercase text-gray-200">Rule 2: Join Strava Club</h4>
-                            <p class="text-xs text-gray-400">Join the official <a href="https://www.strava.com/clubs/2286430" target="_blank" rel="noopener noreferrer" class="text-strava hover:underline font-semibold inline-flex items-center gap-1">Emerging Running Club<i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i></a> for automatic verification.</p>
+                            <h4 class="text-[11px] font-bold uppercase text-chartreuse">Rule 2: Join Strava Club</h4>
+                            <p class="text-[11px] text-gray-400">Join the official <a href="https://www.strava.com/clubs/2286430" target="_blank" rel="noopener noreferrer" class="text-chartreuse hover:underline font-semibold inline-flex items-center gap-1">Emerging Running Club<i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i></a> for automatic verification.</p>
                         </div>
                     </div>
-                    <div class="flex items-start space-x-3 bg-darkbg/80 p-3 rounded-xl border border-darkborder">
-                        <div class="text-strava text-lg pt-0.5"><i class="fa-solid fa-shield-halved"></i></div>
+                    <div class="flex items-start space-x-2.5 bg-navy/60 p-2.5 rounded-lg border border-navy-border/80">
+                        <div class="text-smartblue text-sm pt-0.5"><i class="fa-solid fa-shield-halved"></i></div>
                         <div>
-                            <h4 class="text-xs font-bold uppercase text-gray-200">Rule 3: Don't Cheat</h4>
-                            <p class="text-xs text-gray-400">Don't use fake GPS and play fairness.</p>
+                            <h4 class="text-[11px] font-bold uppercase text-chartreuse">Rule 3: Don't Cheat</h4>
+                            <p class="text-[11px] text-gray-400">Don't use fake GPS and play fairness.</p>
                         </div>
                     </div>
                 </div>
@@ -147,34 +150,34 @@
 
         <!-- EVENT OVERVIEW STATS CARDS -->
         <section class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 w-full">
-            <div class="bg-darkcard p-4 rounded-xl border border-darkborder text-center shadow-md">
-                <span class="text-xs uppercase text-gray-400 font-medium">Target</span>
-                <div id="statTargetGoal" class="text-2xl font-black text-strava mt-1">42.00 <span class="text-xs font-normal">km</span></div>
+            <div class="bg-navy-card p-4 rounded-xl border border-navy-border text-center">
+                <span class="text-[11px] uppercase tracking-wider text-gray-400 font-medium">Target</span>
+                <div id="statTargetGoal" class="text-xl font-bold text-chartreuse mt-0.5">42.00 <span class="text-xs font-normal text-gray-400">km</span></div>
                 <span class="text-[10px] text-gray-400">Event Target</span>
             </div>
-            <div class="bg-darkcard p-4 rounded-xl border border-darkborder text-center shadow-md">
-                <span class="text-xs uppercase text-gray-400 font-medium">Participants</span>
-                <div id="statTotalRiders" class="text-2xl font-black text-strava mt-1">0</div>
+            <div class="bg-navy-card p-4 rounded-xl border border-navy-border text-center">
+                <span class="text-[11px] uppercase tracking-wider text-gray-400 font-medium">Participants</span>
+                <div id="statTotalRiders" class="text-xl font-bold text-white mt-0.5">0</div>
                 <span class="text-[10px] text-gray-400">Active Runners</span>
             </div>
-            <div class="bg-darkcard p-4 rounded-xl border border-darkborder text-center shadow-md">
-                <span class="text-xs uppercase text-gray-400 font-medium">Total Distance</span>
-                <div id="statTotalDistance" class="text-2xl font-black text-strava mt-1">0.00 <span class="text-xs font-normal">km</span></div>
+            <div class="bg-navy-card p-4 rounded-xl border border-navy-border text-center">
+                <span class="text-[11px] uppercase tracking-wider text-gray-400 font-medium">Total Distance</span>
+                <div id="statTotalDistance" class="text-xl font-bold text-white mt-0.5">0.00 <span class="text-xs font-normal text-gray-400">km</span></div>
                 <span class="text-[10px] text-gray-400">Combined Logs</span>
             </div>
-            <div class="bg-darkcard p-4 rounded-xl border border-darkborder text-center shadow-md">
-                <span class="text-xs uppercase text-gray-400 font-medium">Finishers</span>
-                <div id="statFinishersCount" class="text-2xl font-black text-strava mt-1">0</div>
+            <div class="bg-navy-card p-4 rounded-xl border border-navy-border text-center">
+                <span class="text-[11px] uppercase tracking-wider text-gray-400 font-medium">Finishers</span>
+                <div id="statFinishersCount" class="text-xl font-bold text-chartreuse mt-0.5">0</div>
                 <span class="text-[10px] text-gray-400">Hit Target Goal</span>
             </div>
         </section>
 
         <!-- PODIUM FINISHER TRACKER -->
-        <section class="space-y-4">
+        <section class="space-y-3">
             <div class="flex items-center justify-between">
                 <div>
-                    <h3 class="text-xl font-extrabold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-trophy text-amber-400"></i> PODIUM FINISHER 
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-trophy text-chartreuse text-sm"></i> PODIUM FINISHER 
                     </h3>
                     <p class="text-xs text-gray-400">Top 3 participants who completed the target goal. (Based on FINISH TIME)</p>
                 </div>
@@ -190,39 +193,39 @@
         </section>
 
         <!-- LEADERBOARD STREAM SECTION HEADER -->
-        <section class="space-y-4">
+        <section class="space-y-3">
             <div class="flex items-center justify-between">
                 <div>
-                    <h3 class="text-xl font-extrabold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-list-ol text-strava"></i> LEADERBOARD STREAM
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-list-ol text-smartblue text-sm"></i> LEADERBOARD STREAM
                     </h3>
                     <p class="text-xs text-gray-400">Live participant standings and accumulated metrics</p>
                 </div>
             </div>
 
             <!-- MAIN BOX CONTAINER FOR TABS & TABLES -->
-            <div class="bg-darkcard border border-darkborder rounded-2xl overflow-hidden shadow-lg space-y-0">
+            <div class="bg-navy-card border border-navy-border rounded-xl overflow-hidden space-y-0">
                 <!-- Navigation Header for Tabs & Search -->
-                <div class="p-4 sm:p-5 border-b border-darkborder flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-darkcard">
-                    <div class="flex space-x-1.5 sm:space-x-2 bg-darkbg p-1.5 rounded-xl border border-darkborder w-full sm:w-auto overflow-x-auto">
+                <div class="p-4 border-b border-navy-border flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                    <div class="flex space-x-4 border-b sm:border-b-0 border-navy-border w-full sm:w-auto pb-2 sm:pb-0">
                         <!-- Tab 1: Main -->
-                        <button id="tabBtnLeaderboard" onclick="switchTab('leaderboard')" class="flex-1 sm:flex-none px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all bg-strava text-white shadow whitespace-nowrap">
-                            <i class="fa-solid fa-flag-checkered mr-1"></i> Main
+                        <button id="tabBtnLeaderboard" onclick="switchTab('leaderboard')" class="text-xs font-bold text-chartreuse border-b-2 border-chartreuse pb-1 transition-colors flex items-center gap-1.5">
+                            <i class="fa-solid fa-flag-checkered text-[11px]"></i> Main
                         </button>
                         <!-- Tab 2: by Distance -->
-                        <button id="tabBtnLeaderboardDist" onclick="switchTab('distance')" class="flex-1 sm:flex-none px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold text-gray-400 hover:text-white transition-all whitespace-nowrap">
-                            <i class="fa-solid fa-route mr-1"></i> by Distance
+                        <button id="tabBtnLeaderboardDist" onclick="switchTab('distance')" class="text-xs font-medium text-gray-400 hover:text-white pb-1 transition-colors flex items-center gap-1.5">
+                            <i class="fa-solid fa-route text-[11px]"></i> by Distance
                         </button>
                         <!-- Tab 3: by Finish Time -->
-                        <button id="tabBtnLeaderboardTime" onclick="switchTab('finishtime')" class="flex-1 sm:flex-none px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold text-gray-400 hover:text-white transition-all whitespace-nowrap">
-                            <i class="fa-regular fa-clock mr-1"></i> by Finish Time
+                        <button id="tabBtnLeaderboardTime" onclick="switchTab('finishtime')" class="text-xs font-medium text-gray-400 hover:text-white pb-1 transition-colors flex items-center gap-1.5">
+                            <i class="fa-regular fa-clock text-[11px]"></i> by Finish Time
                         </button>
                     </div>
 
                     <div class="flex items-center space-x-3 w-full sm:w-auto">
-                        <div class="relative w-full sm:w-64">
+                        <div class="relative w-full sm:w-56">
                             <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-                            <input type="text" id="searchInput" onkeyup="filterLeaderboardData()" placeholder="Search runner..." class="w-full pl-9 pr-4 py-2 bg-darkbg border border-darkborder rounded-xl text-xs text-white focus:outline-none focus:border-strava transition-all">
+                            <input type="text" id="searchInput" onkeyup="filterLeaderboardData()" placeholder="Search runner..." class="w-full pl-8 pr-3 py-1.5 bg-navy border border-navy-border rounded-lg text-xs text-white focus:outline-none focus:border-smartblue transition-colors">
                         </div>
                     </div>
                 </div>
@@ -231,13 +234,13 @@
                 <div id="leaderboardTab" class="block overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="bg-darkbg/50 text-gray-400 text-[11px] font-semibold uppercase tracking-wider border-b border-darkborder">
+                            <tr class="bg-navy/50 text-gray-400 text-[11px] font-semibold uppercase tracking-wider border-b border-navy-border">
                                 <th class="py-3 px-4 w-12 text-center">Rank</th>
                                 <th class="py-3 px-4">Runner</th>
                                 <th class="py-3 px-4">Distance Progress</th>
                             </tr>
                         </thead>
-                        <tbody id="leaderboardBody" class="divide-y divide-darkborder text-sm">
+                        <tbody id="leaderboardBody" class="divide-y divide-navy-border text-xs">
                             <!-- Main Leaderboard Rows rendered via JavaScript -->
                         </tbody>
                     </table>
@@ -247,13 +250,13 @@
                 <div id="leaderboardDistTab" class="hidden overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="bg-darkbg/50 text-gray-400 text-[11px] font-semibold uppercase tracking-wider border-b border-darkborder">
+                            <tr class="bg-navy/50 text-gray-400 text-[11px] font-semibold uppercase tracking-wider border-b border-navy-border">
                                 <th class="py-3 px-4 w-12 text-center">Rank</th>
                                 <th class="py-3 px-4">Runner</th>
                                 <th class="py-3 px-4">Distance Progress</th>
                             </tr>
                         </thead>
-                        <tbody id="leaderboardDistBody" class="divide-y divide-darkborder text-sm">
+                        <tbody id="leaderboardDistBody" class="divide-y divide-navy-border text-xs">
                             <!-- Distance Leaderboard Rows rendered via JavaScript -->
                         </tbody>
                     </table>
@@ -263,32 +266,32 @@
                 <div id="leaderboardTimeTab" class="hidden overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="bg-darkbg/50 text-gray-400 text-[11px] font-semibold uppercase tracking-wider border-b border-darkborder">
+                            <tr class="bg-navy/50 text-gray-400 text-[11px] font-semibold uppercase tracking-wider border-b border-navy-border">
                                 <th class="py-3 px-4 w-12 text-center">Rank</th>
                                 <th class="py-3 px-4">Runner</th>
                                 <th class="py-3 px-4">FINISH TIME</th>
                             </tr>
                         </thead>
-                        <tbody id="leaderboardTimeBody" class="divide-y divide-darkborder text-sm">
+                        <tbody id="leaderboardTimeBody" class="divide-y divide-navy-border text-xs">
                             <!-- Finish Time Leaderboard Rows rendered via JavaScript -->
                         </tbody>
                     </table>
                 </div>
 
                 <!-- LEADERBOARD PAGINATION CONTROLS FOOTER -->
-                <div class="p-4 border-t border-darkborder flex flex-col sm:flex-row items-center justify-between gap-3 bg-darkcard text-xs text-gray-400">
+                <div class="p-3 border-t border-navy-border flex items-center justify-between text-xs text-gray-400">
                     <div id="leaderboardPaginationInfo">
                         Showing 0 to 0 of 0 entries
                     </div>
-                    <div class="flex items-center space-x-2" id="leaderboardPaginationControls">
-                        <button id="btnPrevLeaderboardPage" onclick="changeLeaderboardPage(-1)" disabled class="px-3 py-1.5 rounded-lg bg-darkbg border border-darkborder text-gray-400 disabled:opacity-40 disabled:cursor-not-allowed hover:text-white hover:border-strava transition-all flex items-center gap-1 font-semibold">
-                            <i class="fa-solid fa-chevron-left text-[10px]"></i> Previous
+                    <div class="flex items-center space-x-3" id="leaderboardPaginationControls">
+                        <button id="btnPrevLeaderboardPage" onclick="changeLeaderboardPage(-1)" disabled class="text-gray-400 hover:text-white disabled:opacity-30 disabled:hover:text-gray-400 font-semibold transition-colors flex items-center gap-1">
+                            <i class="fa-solid fa-chevron-left text-[9px]"></i> Prev
                         </button>
-                        <div id="leaderboardPageNumbers" class="flex items-center space-x-1 font-mono font-bold">
+                        <div id="leaderboardPageNumbers" class="flex items-center space-x-2 font-mono font-medium">
                             <!-- Rendered page buttons -->
                         </div>
-                        <button id="btnNextLeaderboardPage" onclick="changeLeaderboardPage(1)" disabled class="px-3 py-1.5 rounded-lg bg-darkbg border border-darkborder text-gray-400 disabled:opacity-40 disabled:cursor-not-allowed hover:text-white hover:border-strava transition-all flex items-center gap-1 font-semibold">
-                            Next <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                        <button id="btnNextLeaderboardPage" onclick="changeLeaderboardPage(1)" disabled class="text-gray-400 hover:text-white disabled:opacity-30 disabled:hover:text-gray-400 font-semibold transition-colors flex items-center gap-1">
+                            Next <i class="fa-solid fa-chevron-right text-[9px]"></i>
                         </button>
                     </div>
                 </div>
@@ -296,27 +299,27 @@
         </section>
 
         <!-- ACTIVITY STREAM SECTION -->
-        <section class="space-y-4">
+        <section class="space-y-3">
             <div class="flex items-center justify-between">
                 <div>
-                    <h3 class="text-xl font-extrabold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-stream text-strava"></i> ACTIVITY STREAM
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-clock-rotate-left text-smartblue text-sm"></i> ACTIVITY STREAM
                     </h3>
                     <p class="text-xs text-gray-400">Real-time log of recent runner sync activities</p>
                 </div>
             </div>
 
             <!-- ACTIVITY STREAM BOX CONTAINER WITH SEARCH & PAGINATION -->
-            <div class="bg-darkcard border border-darkborder rounded-2xl overflow-hidden shadow-lg space-y-0">
+            <div class="bg-navy-card border border-navy-border rounded-xl overflow-hidden space-y-0">
                 <!-- Activity Stream Header Controls: Search Input -->
-                <div class="p-4 sm:p-5 border-b border-darkborder flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-darkcard">
-                    <div class="text-xs font-bold text-gray-300 flex items-center gap-2">
-                        <i class="fa-solid fa-clock-rotate-left text-strava"></i> Recent Activity Logs
+                <div class="p-4 border-b border-navy-border flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                    <div class="text-xs font-semibold text-gray-300 flex items-center gap-1.5">
+                        <i class="fa-solid fa-list-check text-smartblue"></i> Recent Activity Logs
                     </div>
                     <div class="flex items-center space-x-3 w-full sm:w-auto">
-                        <div class="relative w-full sm:w-64">
+                        <div class="relative w-full sm:w-56">
                             <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-                            <input type="text" id="activitySearchInput" onkeyup="filterActivityData()" placeholder="Search activity..." class="w-full pl-9 pr-4 py-2 bg-darkbg border border-darkborder rounded-xl text-xs text-white focus:outline-none focus:border-strava transition-all">
+                            <input type="text" id="activitySearchInput" onkeyup="filterActivityData()" placeholder="Search activity..." class="w-full pl-8 pr-3 py-1.5 bg-navy border border-navy-border rounded-lg text-xs text-white focus:outline-none focus:border-smartblue transition-colors">
                         </div>
                     </div>
                 </div>
@@ -325,7 +328,7 @@
                 <div id="activityLogTab" class="block overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="bg-darkbg/50 text-gray-400 text-[11px] font-semibold uppercase tracking-wider border-b border-darkborder">
+                            <tr class="bg-navy/50 text-gray-400 text-[11px] font-semibold uppercase tracking-wider border-b border-navy-border">
                                 <th class="py-3 px-4">Athlete Name</th>
                                 <th class="py-3 px-4">Distance (km)</th>
                                 <th class="py-3 px-4">Pace (min/km)</th>
@@ -334,26 +337,26 @@
                                 <th class="py-3 px-4 text-right">Sync Timestamp</th>
                             </tr>
                         </thead>
-                        <tbody id="activityLogBody" class="divide-y divide-darkborder text-sm">
+                        <tbody id="activityLogBody" class="divide-y divide-navy-border text-xs">
                             <!-- Activity Feed Rows rendered via JavaScript -->
                         </tbody>
                     </table>
                 </div>
 
                 <!-- PAGINATION CONTROLS FOOTER -->
-                <div class="p-4 border-t border-darkborder flex flex-col sm:flex-row items-center justify-between gap-3 bg-darkcard text-xs text-gray-400">
+                <div class="p-3 border-t border-navy-border flex items-center justify-between text-xs text-gray-400">
                     <div id="activityPaginationInfo">
                         Showing 0 to 0 of 0 entries
                     </div>
-                    <div class="flex items-center space-x-2" id="activityPaginationControls">
-                        <button id="btnPrevActivityPage" onclick="changeActivityPage(-1)" disabled class="px-3 py-1.5 rounded-lg bg-darkbg border border-darkborder text-gray-400 disabled:opacity-40 disabled:cursor-not-allowed hover:text-white hover:border-strava transition-all flex items-center gap-1 font-semibold">
-                            <i class="fa-solid fa-chevron-left text-[10px]"></i> Previous
+                    <div class="flex items-center space-x-3" id="activityPaginationControls">
+                        <button id="btnPrevActivityPage" onclick="changeActivityPage(-1)" disabled class="text-gray-400 hover:text-white disabled:opacity-30 disabled:hover:text-gray-400 font-semibold transition-colors flex items-center gap-1">
+                            <i class="fa-solid fa-chevron-left text-[9px]"></i> Prev
                         </button>
-                        <div id="activityPageNumbers" class="flex items-center space-x-1 font-mono font-bold">
+                        <div id="activityPageNumbers" class="flex items-center space-x-2 font-mono font-medium">
                             <!-- Rendered page buttons -->
                         </div>
-                        <button id="btnNextActivityPage" onclick="changeActivityPage(1)" disabled class="px-3 py-1.5 rounded-lg bg-darkbg border border-darkborder text-gray-400 disabled:opacity-40 disabled:cursor-not-allowed hover:text-white hover:border-strava transition-all flex items-center gap-1 font-semibold">
-                            Next <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                        <button id="btnNextActivityPage" onclick="changeActivityPage(1)" disabled class="text-gray-400 hover:text-white disabled:opacity-30 disabled:hover:text-gray-400 font-semibold transition-colors flex items-center gap-1">
+                            Next <i class="fa-solid fa-chevron-right text-[9px]"></i>
                         </button>
                     </div>
                 </div>
@@ -363,10 +366,10 @@
     </main>
 
     <!-- FOOTER -->
-    <footer class="bg-darkcard border-t border-darkborder py-6 mt-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-400 gap-4">
+    <footer class="bg-navy-card border-t border-navy-border py-5 mt-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-400 gap-3">
             <div class="flex items-center space-x-2">
-                <i class="fa-brands fa-strava text-strava text-lg"></i>
+                <i class="fa-brands fa-strava text-smartblue text-sm"></i>
                 <span>Powered by Strava & Google</span>
             </div>
             <div>
@@ -376,8 +379,8 @@
     </footer>
 
     <!-- TOAST NOTIFICATION CONTAINER -->
-    <div id="toast" class="fixed bottom-6 right-6 bg-darkcard border border-strava text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 translate-y-24 opacity-0 transition-all duration-300 z-50">
-        <i class="fa-solid fa-circle-check text-strava text-base"></i>
+    <div id="toast" class="fixed bottom-6 right-6 bg-navy-card border border-smartblue text-white text-xs font-medium px-4 py-2.5 rounded-lg shadow-lg flex items-center space-x-2 translate-y-24 opacity-0 transition-all duration-300 z-50">
+        <i class="fa-solid fa-circle-check text-chartreuse text-sm"></i>
         <span id="toastMessage">Data updated successfully</span>
     </div>
 
@@ -577,12 +580,12 @@
         function renderOverviewHeaderStats(leaderboard) {
             const targetEl = document.getElementById('statTargetGoal');
             if (targetEl) {
-                targetEl.innerHTML = `${formatDistanceKm(TARGET_GOAL_KM)} <span class="text-xs font-normal">km</span>`;
+                targetEl.innerHTML = `${formatDistanceKm(TARGET_GOAL_KM)} <span class="text-xs font-normal text-gray-400">km</span>`;
             }
             document.getElementById('statTotalRiders').innerText = leaderboard.length;
             
             const grandTotalDist = leaderboard.reduce((sum, r) => sum + (parseFloat(r.total_distance_km) || 0), 0);
-            document.getElementById('statTotalDistance').innerHTML = `${formatDistanceKm(grandTotalDist)} <span class="text-xs font-normal">km</span>`;
+            document.getElementById('statTotalDistance').innerHTML = `${formatDistanceKm(grandTotalDist)} <span class="text-xs font-normal text-gray-400">km</span>`;
 
             const totalFinishers = leaderboard.filter(r => r.finisher_status === 'FINISHED' || parseFloat(r.total_distance_km) >= TARGET_GOAL_KM).length;
             document.getElementById('statFinishersCount').innerText = totalFinishers;
@@ -597,16 +600,16 @@
                 .sort((a, b) => (parseInt(a.rank) || 99) - (parseInt(b.rank) || 99));
 
             const podiumConfig = [
-                { rank: 1, title: '🥇 1st Place', color: 'border-amber-500/50 bg-gradient-to-b from-amber-500/10 via-darkcard to-darkcard', badgeBg: 'bg-amber-500', iconColor: 'text-amber-400' },
-                { rank: 2, title: '🥈 2nd Place', color: 'border-slate-400/40 bg-gradient-to-b from-slate-400/10 via-darkcard to-darkcard', badgeBg: 'bg-slate-400', iconColor: 'text-slate-300' },
-                { rank: 3, title: '🥉 3rd Place', color: 'border-amber-700/40 bg-gradient-to-b from-amber-700/10 via-darkcard to-darkcard', badgeBg: 'bg-amber-700', iconColor: 'text-amber-600' }
+                { rank: 1, title: '1st Place', border: 'border-chartreuse/50', badge: 'text-chartreuse bg-chartreuse/10 border-chartreuse/30' },
+                { rank: 2, title: '2nd Place', border: 'border-smartblue/40', badge: 'text-smartblue bg-smartblue/10 border-smartblue/30' },
+                { rank: 3, title: '3rd Place', border: 'border-gray-500/40', badge: 'text-gray-300 bg-gray-500/10 border-gray-500/30' }
             ];
 
             container.innerHTML = podiumConfig.map((config, index) => {
                 const finisher = finishers[index];
 
                 if (finisher) {
-                    const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(finisher.athlete_name)}&background=FC4C02&color=fff&bold=true`;
+                    const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(finisher.athlete_name)}&background=1C2541&color=3A86FF&bold=true`;
                     const distVal = parseFloat(finisher.total_distance_km) || 0;
                     const cleanTime = formatTimeValue(finisher.total_moving_time);
                     const paceVal = getPaceMinKm(cleanTime, distVal, finisher.avg_pace_min_km || finisher.avg_speed_km_h || finisher.avg_speed_kmh);
@@ -615,76 +618,71 @@
                     const formattedFinishTime = formatDateTime(rawFinishTs);
 
                     const athleteNameHtml = stravaId
-                        ? `<a href="https://www.strava.com/athletes/${stravaId}" target="_blank" rel="noopener noreferrer" class="font-bold text-white text-base hover:text-strava transition-colors flex items-center gap-1.5 group">
+                        ? `<a href="https://www.strava.com/athletes/${stravaId}" target="_blank" rel="noopener noreferrer" class="font-bold text-white text-sm hover:text-chartreuse transition-colors flex items-center gap-1">
                             ${finisher.athlete_name}
-                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-strava opacity-70 group-hover:opacity-100 transition-opacity" title="View Strava Profile"></i>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[9px] text-gray-400"></i>
                            </a>`
-                        : `<h4 class="font-bold text-white text-base">${finisher.athlete_name}</h4>`;
+                        : `<h4 class="font-bold text-white text-sm">${finisher.athlete_name}</h4>`;
 
                     return `
-                        <div class="podium-card border ${config.color} p-5 rounded-2xl relative overflow-hidden shadow-xl flex flex-col justify-between">
+                        <div class="podium-card bg-navy-card border ${config.border} p-4 rounded-xl flex flex-col justify-between space-y-4">
                             <div>
                                 <div class="flex items-start justify-between">
                                     <div class="flex items-center space-x-3">
-                                        <img src="${avatarUrl}" alt="${finisher.athlete_name}" class="w-12 h-12 rounded-full border-2 border-strava object-cover">
+                                        <img src="${avatarUrl}" alt="${finisher.athlete_name}" class="w-10 h-10 rounded-full border border-navy-border object-cover">
                                         <div>
-                                            <div class="flex items-center gap-1.5">
-                                                ${athleteNameHtml}
-                                                <i class="fa-solid fa-circle-check text-strava text-xs" title="Verified Finisher"></i>
-                                            </div>
-                                            <p class="text-[11px] text-gray-400">42 KM Target Completed</p>
+                                            ${athleteNameHtml}
+                                            <p class="text-[11px] text-gray-400 mt-0.5">42 KM Target Completed</p>
                                         </div>
                                     </div>
-                                    <span class="${config.badgeBg} text-darkbg text-[10px] font-black uppercase px-2.5 py-1 rounded-full shadow">
+                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded border ${config.badge}">
                                         ${config.title}
                                     </span>
                                 </div>
 
                                 <!-- 3-Column Metrics Grid -->
-                                <div class="grid grid-cols-3 gap-2 mt-5 pt-4 border-t border-darkborder/60">
-                                    <div class="bg-darkbg/70 p-2 rounded-xl border border-darkborder text-center">
-                                        <span class="text-[9px] uppercase text-gray-400 block font-medium">Distance</span>
+                                <div class="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-navy-border/60 text-center">
+                                    <div>
+                                        <span class="text-[9px] uppercase tracking-wider text-gray-400 block font-medium">Distance</span>
                                         <span class="text-xs font-bold text-white">${formatDistanceKm(finisher.total_distance_km)} km</span>
                                     </div>
-                                    <div class="bg-darkbg/70 p-2 rounded-xl border border-darkborder text-center">
-                                        <span class="text-[9px] uppercase text-gray-400 block font-medium">Avg Pace</span>
-                                        <span class="text-xs font-bold text-sky-400 font-mono">${paceVal} /km</span>
+                                    <div>
+                                        <span class="text-[9px] uppercase tracking-wider text-gray-400 block font-medium">Avg Pace</span>
+                                        <span class="text-xs font-bold text-smartblue font-mono">${paceVal} /km</span>
                                     </div>
-                                    <div class="bg-darkbg/70 p-2 rounded-xl border border-darkborder text-center">
-                                        <span class="text-[9px] uppercase text-gray-400 block font-medium">Moving Time</span>
-                                        <span class="text-xs font-bold text-emerald-400 font-mono">${cleanTime}</span>
+                                    <div>
+                                        <span class="text-[9px] uppercase tracking-wider text-gray-400 block font-medium">Moving Time</span>
+                                        <span class="text-xs font-bold text-gray-300 font-mono">${cleanTime}</span>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Finish Time Info Box -->
-                            <div class="mt-3 pt-3 border-t border-darkborder/40 flex items-center justify-between text-xs bg-darkbg/40 px-3 py-1.5 rounded-xl border border-darkborder/60">
-                                <span class="text-gray-400 text-[11px] font-medium flex items-center gap-1">
-                                    <i class="fa-regular fa-clock text-amber-400 text-[10px]"></i> Finish Time:
-                                </span>
-                                <span class="font-mono text-[11px] text-amber-400 font-bold">${formattedFinishTime}</span>
+                            <div class="pt-2 border-t border-navy-border/40 flex items-center justify-between text-[11px]">
+                                <span class="text-gray-400 font-medium">Finish Time:</span>
+                                <span class="font-mono text-chartreuse font-semibold">${formattedFinishTime}</span>
                             </div>
                         </div>
                     `;
                 } else {
                     return `
-                        <div class="border border-dashed border-darkborder bg-darkcard/50 p-5 rounded-2xl flex flex-col justify-between relative space-y-4">
+                        <div class="bg-navy-card/40 border border-dashed border-navy-border p-4 rounded-xl flex flex-col justify-between space-y-3">
                             <div class="flex items-center justify-between">
-                                <span class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
-                                    <i class="fa-solid fa-award ${config.iconColor}"></i> ${config.title}
+                                <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                                    ${config.title}
                                 </span>
-                                <span class="bg-darkbg text-gray-400 border border-darkborder text-[10px] font-semibold px-2.5 py-0.5 rounded-full">
+                                <span class="text-[10px] text-gray-500 font-medium">
                                     Unclaimed
                                 </span>
                             </div>
 
-                            <div class="py-4 text-center space-y-1">
-                                <div class="text-lg font-black text-strava tracking-wide">Podium available</div>
-                                <p class="text-[11px] text-gray-400">Be the next runner to complete the distance target!</p>
+                            <div class="py-3 text-center">
+                                <div class="text-xs font-bold text-gray-300">Podium available</div>
+                                <p class="text-[11px] text-gray-500 mt-0.5">Be the next runner to complete the distance target!</p>
                             </div>
 
-                            <div class="w-full bg-darkbg rounded-full h-2 overflow-hidden border border-darkborder">
-                                <div class="bg-strava/30 h-full w-0"></div>
+                            <div class="w-full bg-navy rounded-full h-1 overflow-hidden">
+                                <div class="bg-smartblue/30 h-full w-0"></div>
                             </div>
                         </div>
                     `;
@@ -770,7 +768,7 @@
             const tbody = document.getElementById('leaderboardBody');
 
             if (!leaderboardPageData || leaderboardPageData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="3" class="py-8 text-center text-gray-400 text-xs">No runners found.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="3" class="py-6 text-center text-gray-400 text-xs">No runners found.</td></tr>`;
                 return;
             }
 
@@ -785,29 +783,21 @@
                 const formattedFinishTime = formatDateTime(rawFinishTs);
 
                 const athleteNameHtml = stravaId
-                    ? `<a href="https://www.strava.com/athletes/${stravaId}" target="_blank" rel="noopener noreferrer" class="font-bold text-white hover:text-strava transition-colors flex items-center gap-1.5 group truncate max-w-[130px] sm:max-w-[200px] inline-block align-bottom">
-                        <span class="truncate">${rider.athlete_name}</span>
-                        <i class="fa-brands fa-strava text-strava text-xs group-hover:scale-110 transition-transform shrink-0" title="View Strava Profile"></i>
+                    ? `<a href="https://www.strava.com/athletes/${stravaId}" target="_blank" rel="noopener noreferrer" class="font-bold text-white hover:text-chartreuse transition-colors">
+                        ${rider.athlete_name}
                        </a>`
-                    : `<div class="font-bold text-white flex items-center gap-1.5 truncate max-w-[130px] sm:max-w-[200px]">
-                        <span class="truncate">${rider.athlete_name}</span>
-                        <i class="fa-brands fa-strava text-strava text-xs shrink-0" title="Strava Club Member"></i>
-                       </div>`;
+                    : `<span class="font-bold text-white">${rider.athlete_name}</span>`;
 
                 const statusBadgeHtml = isFinisher
-                    ? `<span class="text-[10px] text-amber-400 font-bold inline-flex items-center gap-1">
-                        <i class="fa-solid fa-flag-checkered text-[9px]"></i> FINISHER
-                       </span>`
-                    : `<span class="text-[10px] text-gray-400 font-medium inline-flex items-center gap-1">
-                        IN PROGRESS
-                       </span>`;
+                    ? `<span class="text-[10px] text-chartreuse font-bold">FINISHER</span>`
+                    : `<span class="text-[10px] text-gray-400 font-medium">IN PROGRESS</span>`;
 
                 const totalRunsHtml = `<span class="text-[11px] text-gray-400 font-medium flex items-center gap-1">
-                    <i class="fa-solid fa-person-running text-[10px] text-strava/70"></i> ${totalRuns} ${totalRuns === 1 ? 'Run' : 'Runs'}
+                    <i class="fa-solid fa-person-running text-[10px] text-smartblue"></i> ${totalRuns} ${totalRuns === 1 ? 'Run' : 'Runs'}
                 </span>`;
 
                 const finishTimeLineHtml = isFinisher && formattedFinishTime !== '-'
-                    ? `<div class="flex items-center justify-between text-[11px] font-mono text-amber-400 font-bold">
+                    ? `<div class="flex items-center justify-between text-[11px] font-mono text-chartreuse font-bold">
                         <span>Finish Time:</span>
                         <span>${formattedFinishTime}</span>
                        </div>`
@@ -817,25 +807,25 @@
                        </div>`;
 
                 return `
-                    <tr class="hover:bg-darkbg/40 transition-colors">
-                        <td class="py-4 px-4 font-bold text-gray-300 text-center">
-                            ${rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `#${rank}`}
+                    <tr class="hover:bg-navy/40 transition-colors">
+                        <td class="py-3 px-4 font-bold ${rank <= 3 ? 'text-chartreuse' : 'text-gray-300'} text-center">
+                            ${rank <= 3 ? `#${rank}` : rank}
                         </td>
-                        <td class="py-4 px-4">
-                            <div class="flex flex-col space-y-1">
+                        <td class="py-3 px-4">
+                            <div class="flex flex-col space-y-0.5">
                                 <div>${athleteNameHtml}</div>
                                 <div>${statusBadgeHtml}</div>
                                 <div>${totalRunsHtml}</div>
                             </div>
                         </td>
-                        <td class="py-4 px-4 min-w-[220px]">
-                            <div class="flex flex-col space-y-1.5">
+                        <td class="py-3 px-4 min-w-[200px]">
+                            <div class="flex flex-col space-y-1">
                                 <div class="flex items-center justify-between text-xs font-mono">
-                                    <span class="font-bold text-white">${formatDistanceKm(distance)} / <span class="text-strava font-bold">${formatDistanceKm(TARGET_GOAL_KM)} km</span></span>
-                                    <span class="text-[11px] ${isFinisher ? 'text-amber-400 font-bold' : 'text-gray-400'}">${progressPct}%</span>
+                                    <span class="font-bold text-white">${formatDistanceKm(distance)} / <span class="text-gray-400 font-normal">${formatDistanceKm(TARGET_GOAL_KM)} km</span></span>
+                                    <span class="text-[11px] ${isFinisher ? 'text-chartreuse font-bold' : 'text-gray-400'}">${progressPct}%</span>
                                 </div>
-                                <div class="w-full bg-darkbg rounded-full h-2 overflow-hidden border border-darkborder">
-                                    <div class="h-full ${isFinisher ? 'bg-gradient-to-r from-amber-500 to-strava' : 'bg-strava'} transition-all duration-500" style="width: ${progressPct}%"></div>
+                                <div class="w-full bg-navy rounded-full h-1.5 overflow-hidden">
+                                    <div class="h-full ${isFinisher ? 'bg-chartreuse' : 'bg-smartblue'} transition-all duration-300" style="width: ${progressPct}%"></div>
                                 </div>
                                 ${finishTimeLineHtml}
                             </div>
@@ -850,7 +840,7 @@
             const tbody = document.getElementById('leaderboardDistBody');
 
             if (!leaderboardPageData || leaderboardPageData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="3" class="py-8 text-center text-gray-400 text-xs">No runners found.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="3" class="py-6 text-center text-gray-400 text-xs">No runners found.</td></tr>`;
                 return;
             }
 
@@ -862,41 +852,31 @@
                 const totalRuns = rider.total_activities || rider.activities || 1;
 
                 const athleteNameHtml = stravaId
-                    ? `<a href="https://www.strava.com/athletes/${stravaId}" target="_blank" rel="noopener noreferrer" class="font-bold text-white hover:text-strava transition-colors inline-flex items-center gap-1.5 group max-w-[150px] xs:max-w-[200px] sm:max-w-[280px] whitespace-nowrap overflow-hidden">
-                        <span class="truncate">${rider.athlete_name}</span>
-                        <i class="fa-brands fa-strava text-strava text-xs group-hover:scale-110 transition-transform shrink-0" title="View Strava Profile"></i>
+                    ? `<a href="https://www.strava.com/athletes/${stravaId}" target="_blank" rel="noopener noreferrer" class="font-bold text-white hover:text-chartreuse transition-colors">
+                        ${rider.athlete_name}
                        </a>`
-                    : `<div class="font-bold text-white inline-flex items-center gap-1.5 max-w-[150px] xs:max-w-[200px] sm:max-w-[280px] whitespace-nowrap overflow-hidden">
-                        <span class="truncate">${rider.athlete_name}</span>
-                        <i class="fa-brands fa-strava text-strava text-xs shrink-0" title="Strava Club Member"></i>
-                       </div>`;
+                    : `<span class="font-bold text-white">${rider.athlete_name}</span>`;
 
                 const statusBadgeHtml = isFinisher
-                    ? `<span class="text-[10px] text-amber-400 font-bold inline-flex items-center gap-1">
-                        <i class="fa-solid fa-flag-checkered text-[9px]"></i> FINISHER
-                       </span>`
-                    : `<span class="text-[10px] text-gray-400 font-medium inline-flex items-center gap-1">
-                        IN PROGRESS
-                       </span>`;
+                    ? `<span class="text-[10px] text-chartreuse font-bold">FINISHER</span>`
+                    : `<span class="text-[10px] text-gray-400 font-medium">IN PROGRESS</span>`;
 
                 const totalRunsHtml = `<span class="text-[11px] text-gray-400 font-medium flex items-center gap-1">
-                    <i class="fa-solid fa-person-running text-[10px] text-strava/70"></i> Total Runs: ${totalRuns}
+                    <i class="fa-solid fa-person-running text-[10px] text-smartblue"></i> Activity: ${totalRuns}
                 </span>`;
 
                 return `
-                    <tr class="hover:bg-darkbg/40 transition-colors">
-                        <td class="py-4 px-4 font-bold text-gray-300 text-center">
-                            ${rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `#${rank}`}
-                        </td>
-                        <td class="py-4 px-4">
-                            <div class="flex flex-col space-y-1">
+                    <tr class="hover:bg-navy/40 transition-colors">
+                        <td class="py-3 px-4 font-bold text-gray-300 text-center">${rank}</td>
+                        <td class="py-3 px-4">
+                            <div class="flex flex-col space-y-0.5">
                                 <div>${athleteNameHtml}</div>
                                 <div>${statusBadgeHtml}</div>
                             </div>
                         </td>
-                        <td class="py-4 px-4">
-                            <div class="flex flex-col space-y-1">
-                                <div class="font-bold text-strava text-sm sm:text-base font-mono">
+                        <td class="py-3 px-4">
+                            <div class="flex flex-col space-y-0.5">
+                                <div class="font-bold text-white font-mono">
                                     ${formatDistanceKm(distance)} km
                                 </div>
                                 <div>${totalRunsHtml}</div>
@@ -912,7 +892,7 @@
             const tbody = document.getElementById('leaderboardTimeBody');
 
             if (!leaderboardPageData || leaderboardPageData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="3" class="py-8 text-center text-gray-400 text-xs">No runners found.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="3" class="py-6 text-center text-gray-400 text-xs">No runners found.</td></tr>`;
                 return;
             }
 
@@ -925,41 +905,31 @@
                 const formattedFinishTime = formatDateTime(rawFinishTs);
 
                 const athleteNameHtml = stravaId
-                    ? `<a href="https://www.strava.com/athletes/${stravaId}" target="_blank" rel="noopener noreferrer" class="font-bold text-white hover:text-strava transition-colors inline-flex items-center gap-1.5 group max-w-[150px] xs:max-w-[200px] sm:max-w-[280px] whitespace-nowrap overflow-hidden">
-                        <span class="truncate">${rider.athlete_name}</span>
-                        <i class="fa-brands fa-strava text-strava text-xs group-hover:scale-110 transition-transform shrink-0" title="View Strava Profile"></i>
+                    ? `<a href="https://www.strava.com/athletes/${stravaId}" target="_blank" rel="noopener noreferrer" class="font-bold text-white hover:text-chartreuse transition-colors">
+                        ${rider.athlete_name}
                        </a>`
-                    : `<div class="font-bold text-white inline-flex items-center gap-1.5 max-w-[150px] xs:max-w-[200px] sm:max-w-[280px] whitespace-nowrap overflow-hidden">
-                        <span class="truncate">${rider.athlete_name}</span>
-                        <i class="fa-brands fa-strava text-strava text-xs shrink-0" title="Strava Club Member"></i>
-                       </div>`;
+                    : `<span class="font-bold text-white">${rider.athlete_name}</span>`;
 
                 const statusBadgeHtml = isFinisher
-                    ? `<span class="text-[10px] text-amber-400 font-bold inline-flex items-center gap-1">
-                        <i class="fa-solid fa-flag-checkered text-[9px]"></i> FINISHER
-                       </span>`
-                    : `<span class="text-[10px] text-gray-400 font-medium inline-flex items-center gap-1">
-                        IN PROGRESS
-                       </span>`;
+                    ? `<span class="text-[10px] text-chartreuse font-bold">FINISHER</span>`
+                    : `<span class="text-[10px] text-gray-400 font-medium">IN PROGRESS</span>`;
 
                 const totalRunsHtml = `<span class="text-[11px] text-gray-400 font-medium flex items-center gap-1">
-                    <i class="fa-solid fa-person-running text-[10px] text-strava/70"></i> Total Runs: ${totalRuns}
+                    <i class="fa-solid fa-person-running text-[10px] text-smartblue"></i> Activity: ${totalRuns}
                 </span>`;
 
                 return `
-                    <tr class="hover:bg-darkbg/40 transition-colors">
-                        <td class="py-4 px-4 font-bold text-gray-300 text-center">
-                            ${rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `#${rank}`}
-                        </td>
-                        <td class="py-4 px-4">
-                            <div class="flex flex-col space-y-1">
+                    <tr class="hover:bg-navy/40 transition-colors">
+                        <td class="py-3 px-4 font-bold text-gray-300 text-center">${rank}</td>
+                        <td class="py-3 px-4">
+                            <div class="flex flex-col space-y-0.5">
                                 <div>${athleteNameHtml}</div>
                                 <div>${statusBadgeHtml}</div>
                             </div>
                         </td>
-                        <td class="py-4 px-4">
-                            <div class="flex flex-col space-y-1">
-                                <div class="font-bold text-strava text-sm sm:text-base font-mono">
+                        <td class="py-3 px-4">
+                            <div class="flex flex-col space-y-0.5">
+                                <div class="font-bold text-chartreuse font-mono">
                                     ${formattedFinishTime}
                                 </div>
                                 <div>${totalRunsHtml}</div>
@@ -977,7 +947,7 @@
             const nextBtn = document.getElementById('btnNextLeaderboardPage');
             const pageNumbersEl = document.getElementById('leaderboardPageNumbers');
 
-            infoEl.innerText = totalItems > 0 ? `Showing ${startItem} to ${endItem} of ${totalItems} entries` : `Showing 0 to 0 of 0 entries`;
+            infoEl.innerText = totalItems > 0 ? `Showing ${startItem}–${endItem} of ${totalItems}` : `Showing 0 entries`;
 
             prevBtn.disabled = currentLeaderboardPage <= 1 || totalItems === 0;
             nextBtn.disabled = currentLeaderboardPage >= totalPages || totalItems === 0;
@@ -985,9 +955,9 @@
             let pageButtonsHtml = '';
             for (let i = 1; i <= totalPages; i++) {
                 if (i === currentLeaderboardPage) {
-                    pageButtonsHtml += `<button class="w-7 h-7 rounded-lg bg-strava text-white text-xs shadow flex items-center justify-center font-bold">${i}</button>`;
+                    pageButtonsHtml += `<span class="text-chartreuse font-bold">${i}</span>`;
                 } else {
-                    pageButtonsHtml += `<button onclick="goToLeaderboardPage(${i})" class="w-7 h-7 rounded-lg bg-darkbg border border-darkborder text-gray-400 hover:text-white hover:border-strava text-xs flex items-center justify-center transition-all">${i}</button>`;
+                    pageButtonsHtml += `<button onclick="goToLeaderboardPage(${i})" class="text-gray-400 hover:text-white transition-colors">${i}</button>`;
                 }
             }
             pageNumbersEl.innerHTML = pageButtonsHtml;
@@ -1027,7 +997,6 @@
                     });
             }
 
-            // Apply search filter and reset page to 1
             filterActivityData();
         }
 
@@ -1057,7 +1026,7 @@
             const totalItems = filteredActivityLogs.length;
 
             if (totalItems === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-gray-400 text-xs">No activity log entries found.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="py-6 text-center text-gray-400 text-xs">No activity log entries found.</td></tr>`;
                 updateActivityPaginationControls(0, 0, 0, 0);
                 return;
             }
@@ -1080,24 +1049,19 @@
                 const stravaId = log.strava_id || log.athlete_id || '';
 
                 const nameHtml = stravaId
-                    ? `<a href="https://www.strava.com/athletes/${stravaId}" target="_blank" rel="noopener noreferrer" class="font-semibold text-white text-xs hover:text-strava transition-colors flex items-center gap-1 group">
+                    ? `<a href="https://www.strava.com/athletes/${stravaId}" target="_blank" rel="noopener noreferrer" class="font-semibold text-white hover:text-chartreuse transition-colors">
                         ${log.athlete_name}
-                        <i class="fa-brands fa-strava text-strava text-[10px] group-hover:scale-110 transition-transform"></i>
                        </a>`
-                    : `<span class="font-semibold text-white text-xs">${log.athlete_name}</span>`;
+                    : `<span class="font-semibold text-white">${log.athlete_name}</span>`;
 
                 return `
-                    <tr class="hover:bg-darkbg/40 transition-colors">
-                        <td class="py-3 px-4">
-                            ${nameHtml}
-                        </td>
-                        <td class="py-3 px-4 font-bold text-strava text-xs font-mono">${formatDistanceKm(distKm)} km</td>
-                        <td class="py-3 px-4 text-xs font-mono text-strava font-bold">${paceVal} /km</td>
-                        <td class="py-3 px-4 text-xs font-mono text-emerald-400">${log.elevation_m || log.elevation || 0} m</td>
-                        <td class="py-3 px-4 text-xs font-mono text-gray-300">${cleanMovingTime}</td>
-                        <td class="py-3 px-4 text-right text-xs font-mono text-gray-400">
-                            ${formattedTimestamp}
-                        </td>
+                    <tr class="hover:bg-navy/40 transition-colors">
+                        <td class="py-3 px-4">${nameHtml}</td>
+                        <td class="py-3 px-4 font-semibold text-white font-mono">${formatDistanceKm(distKm)} km</td>
+                        <td class="py-3 px-4 font-mono text-smartblue font-semibold">${paceVal} /km</td>
+                        <td class="py-3 px-4 font-mono text-gray-300">${log.elevation_m || log.elevation || 0} m</td>
+                        <td class="py-3 px-4 font-mono text-gray-300">${cleanMovingTime}</td>
+                        <td class="py-3 px-4 text-right font-mono text-gray-400">${formattedTimestamp}</td>
                     </tr>
                 `;
             }).join('');
@@ -1112,7 +1076,7 @@
             const nextBtn = document.getElementById('btnNextActivityPage');
             const pageNumbersEl = document.getElementById('activityPageNumbers');
 
-            infoEl.innerText = totalItems > 0 ? `Showing ${startItem} to ${endItem} of ${totalItems} entries` : `Showing 0 to 0 of 0 entries`;
+            infoEl.innerText = totalItems > 0 ? `Showing ${startItem}–${endItem} of ${totalItems}` : `Showing 0 entries`;
 
             prevBtn.disabled = currentActivityPage <= 1 || totalItems === 0;
             nextBtn.disabled = currentActivityPage >= totalPages || totalItems === 0;
@@ -1120,9 +1084,9 @@
             let pageButtonsHtml = '';
             for (let i = 1; i <= totalPages; i++) {
                 if (i === currentActivityPage) {
-                    pageButtonsHtml += `<button class="w-7 h-7 rounded-lg bg-strava text-white text-xs shadow flex items-center justify-center font-bold">${i}</button>`;
+                    pageButtonsHtml += `<span class="text-chartreuse font-bold">${i}</span>`;
                 } else {
-                    pageButtonsHtml += `<button onclick="goToActivityPage(${i})" class="w-7 h-7 rounded-lg bg-darkbg border border-darkborder text-gray-400 hover:text-white hover:border-strava text-xs flex items-center justify-center transition-all">${i}</button>`;
+                    pageButtonsHtml += `<button onclick="goToActivityPage(${i})" class="text-gray-400 hover:text-white transition-colors">${i}</button>`;
                 }
             }
             pageNumbersEl.innerHTML = pageButtonsHtml;
@@ -1143,7 +1107,7 @@
         // TAB SWITCHING (LEADERBOARD STREAM TABS ONLY)
         function switchTab(tabName) {
             currentActiveTab = tabName;
-            currentLeaderboardPage = 1; // Reset to page 1 on tab switch
+            currentLeaderboardPage = 1;
 
             const leaderboardTab = document.getElementById('leaderboardTab');
             const leaderboardDistTab = document.getElementById('leaderboardDistTab');
@@ -1153,8 +1117,8 @@
             const tabBtnLeaderboardDist = document.getElementById('tabBtnLeaderboardDist');
             const tabBtnLeaderboardTime = document.getElementById('tabBtnLeaderboardTime');
 
-            const activeBtnClass = "flex-1 sm:flex-none px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all bg-strava text-white shadow whitespace-nowrap";
-            const inactiveBtnClass = "flex-1 sm:flex-none px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold text-gray-400 hover:text-white transition-all whitespace-nowrap";
+            const activeBtnClass = "text-xs font-bold text-chartreuse border-b-2 border-chartreuse pb-1 transition-colors flex items-center gap-1.5";
+            const inactiveBtnClass = "text-xs font-medium text-gray-400 hover:text-white pb-1 transition-colors flex items-center gap-1.5";
 
             if (tabName === 'leaderboard') {
                 leaderboardTab.classList.remove('hidden');
@@ -1187,7 +1151,7 @@
 
         // LEADERBOARD STREAM SEARCH FILTER
         function filterLeaderboardData() {
-            currentLeaderboardPage = 1; // Reset to page 1 on search
+            currentLeaderboardPage = 1;
             const query = (document.getElementById('searchInput').value || '').toLowerCase().trim();
             
             // 1. Base Search Filter
