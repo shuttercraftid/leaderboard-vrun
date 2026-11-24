@@ -152,7 +152,7 @@
         <section class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 w-full">
             <div class="bg-navy-card p-4 rounded-xl border border-navy-border text-center">
                 <span class="text-[11px] uppercase tracking-wider text-gray-400 font-medium">Target</span>
-                <div id="statTargetGoal" class="text-xl font-bold text-chartreuse mt-0.5">42.00 <span class="text-xs font-normal text-gray-400">km</span></div>
+                <div id="statTargetGoal" class="text-xl font-bold text-chartreuse mt-0.5">0.00 <span class="text-xs font-normal text-gray-400">km</span></div>
                 <span class="text-[10px] text-gray-400">Event Target</span>
             </div>
             <div class="bg-navy-card p-4 rounded-xl border border-navy-border text-center">
@@ -412,6 +412,60 @@
             return isNaN(num) ? '0.00' : num.toFixed(2);
         }
 
+        // GENERAL FLEXIBLE COUNTER ANIMATION (INTEGERS & DECIMALS)
+        function animateCounter(element, start, end, duration, decimals = 0, suffix = '') {
+            if (!element) return;
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const easeOutProgress = 1 - Math.pow(1 - progress, 2);
+                const currentVal = start + (end - start) * easeOutProgress;
+                
+                const formattedNum = decimals > 0 ? currentVal.toFixed(decimals) : Math.floor(currentVal).toString();
+                element.innerHTML = suffix ? `${formattedNum} ${suffix}` : formattedNum;
+                
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // ANIMATED COUNTER FOR DISTANCE NUMBERS (0.00 -> Target KM)
+        function animateValue(element, start, end, duration) {
+            if (!element) return;
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const easeOutProgress = 1 - Math.pow(1 - progress, 2);
+                const currentVal = start + (end - start) * easeOutProgress;
+                element.innerText = currentVal.toFixed(2);
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // ANIMATED COUNTER FOR PROGRESS PERCENTAGE (0.0% -> Target %)
+        function animateValuePct(element, start, end, duration) {
+            if (!element) return;
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const easeOutProgress = 1 - Math.pow(1 - progress, 2);
+                const currentVal = start + (end - start) * easeOutProgress;
+                element.innerText = currentVal.toFixed(1) + '%';
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
         // HELPER FUNCTION: FORMAT DATE & TIME CLEANLY WITH FLEXIBLE ISO/DATETIME PARSING
         function formatDateTime(timestampStr) {
             if (!timestampStr || timestampStr === '-' || timestampStr === 'N/A') return '-';
@@ -434,7 +488,7 @@
         let sampleLeaderboard = [
             { rank: 1, athlete_name: 'Marcus Vance', strava_id: '12345678', total_distance_km: 48.20, total_elev_gain_m: 350, total_moving_time: '04:01:00', total_activities: 5, avg_pace_min_km: '5:00', progress: '100%', finisher_status: 'FINISHED', finish_timestamp: '2026-11-18T14:30:00.000Z' },
             { rank: 2, athlete_name: 'Elena Rostova', strava_id: '87654321', total_distance_km: 62.50, total_elev_gain_m: 220, total_moving_time: '05:30:45', total_activities: 6, avg_pace_min_km: '5:18', progress: '100%', finisher_status: 'FINISHED', finish_timestamp: '2026-11-19T09:15:00.000Z' },
-            { rank: 3, athlete_name: 'Julian Thorne', strava_id: '45678912', total_distance_km: 31.40, total_elev_gain_m: 180, total_moving_time: '03:08:24', total_activities: 3, avg_pace_min_km: '6:00', progress: '74.8%', finisher_status: 'IN PROGRESS' }
+            { rank: 3, athlete_name: 'Julian Thorne', strava_id: '45678912', total_distance_km: 31.40, total_elev_gain_m: 180, total_moving_time: '03:08:24', total_activities: 3, avg_pace_min_km: '74.8%', finisher_status: 'IN PROGRESS' }
         ];
 
         let sampleActivityLogs = [
@@ -576,19 +630,29 @@
             document.getElementById('syncStatusTag').innerText = `Updated: ${now.toLocaleTimeString()}`;
         }
 
-        // 1. OVERVIEW STATS
+        // 1. OVERVIEW STATS (WITH VALUE ANIMATION ON LOAD)
         function renderOverviewHeaderStats(leaderboard) {
             const targetEl = document.getElementById('statTargetGoal');
             if (targetEl) {
-                targetEl.innerHTML = `${formatDistanceKm(TARGET_GOAL_KM)} <span class="text-xs font-normal text-gray-400">km</span>`;
+                animateCounter(targetEl, 0, TARGET_GOAL_KM, 1200, 2, '<span class="text-xs font-normal text-gray-400">km</span>');
             }
-            document.getElementById('statTotalRiders').innerText = leaderboard.length;
+
+            const ridersEl = document.getElementById('statTotalRiders');
+            if (ridersEl) {
+                animateCounter(ridersEl, 0, leaderboard.length, 1200, 0);
+            }
             
             const grandTotalDist = leaderboard.reduce((sum, r) => sum + (parseFloat(r.total_distance_km) || 0), 0);
-            document.getElementById('statTotalDistance').innerHTML = `${formatDistanceKm(grandTotalDist)} <span class="text-xs font-normal text-gray-400">km</span>`;
+            const distEl = document.getElementById('statTotalDistance');
+            if (distEl) {
+                animateCounter(distEl, 0, grandTotalDist, 1200, 2, '<span class="text-xs font-normal text-gray-400">km</span>');
+            }
 
             const totalFinishers = leaderboard.filter(r => r.finisher_status === 'FINISHED' || parseFloat(r.total_distance_km) >= TARGET_GOAL_KM).length;
-            document.getElementById('statFinishersCount').innerText = totalFinishers;
+            const finishersEl = document.getElementById('statFinishersCount');
+            if (finishersEl) {
+                animateCounter(finishersEl, 0, totalFinishers, 1200, 0);
+            }
         }
 
         // 2. PODIUM FINISHER TRACKER RENDERER
@@ -763,7 +827,7 @@
             updateLeaderboardPaginationControls(totalItems > 0 ? startIndex + 1 : 0, endIndex, totalItems, totalPages);
         }
 
-        // 3. TAB 1: MAIN LEADERBOARD TABLE RENDERER
+        // 3. TAB 1: MAIN LEADERBOARD TABLE RENDERER WITH FLUID ANIMATIONS
         function renderLeaderboardTable(leaderboardPageData) {
             const tbody = document.getElementById('leaderboardBody');
 
@@ -776,7 +840,8 @@
                 const rank = parseInt(rider.rank) || (index + 1);
                 const isFinisher = rider.finisher_status === 'FINISHED' || parseFloat(rider.total_distance_km) >= TARGET_GOAL_KM;
                 const distance = parseFloat(rider.total_distance_km) || 0;
-                const progressPct = Math.min(100, ((distance / TARGET_GOAL_KM) * 100)).toFixed(1);
+                const progressPctNum = Math.min(100, ((distance / TARGET_GOAL_KM) * 100));
+                const progressPct = progressPctNum.toFixed(1);
                 const stravaId = rider.strava_id || rider.athlete_id || '';
                 const totalRuns = rider.total_activities || rider.activities || 1;
                 const rawFinishTs = getAthleteFinishTimestamp(rider);
@@ -821,11 +886,11 @@
                         <td class="py-3 px-4 min-w-[200px]">
                             <div class="flex flex-col space-y-1">
                                 <div class="flex items-center justify-between text-xs font-mono">
-                                    <span class="font-bold text-white">${formatDistanceKm(distance)} / <span class="text-gray-400 font-normal">${formatDistanceKm(TARGET_GOAL_KM)} km</span></span>
-                                    <span class="text-[11px] ${isFinisher ? 'text-chartreuse font-bold' : 'text-gray-400'}">${progressPct}%</span>
+                                    <span class="font-bold text-white"><span class="distance-num-anim" data-target="${distance}">0.00</span> / <span class="text-gray-400 font-normal">${formatDistanceKm(TARGET_GOAL_KM)} km</span></span>
+                                    <span class="text-[11px] distance-pct-anim ${isFinisher ? 'text-chartreuse font-bold' : 'text-gray-400'}" data-target-pct="${progressPctNum}">0.0%</span>
                                 </div>
                                 <div class="w-full bg-navy rounded-full h-1.5 overflow-hidden">
-                                    <div class="h-full ${isFinisher ? 'bg-chartreuse' : 'bg-smartblue'} transition-all duration-300" style="width: ${progressPct}%"></div>
+                                    <div class="h-full ${isFinisher ? 'bg-chartreuse' : 'bg-smartblue'} progress-bar-fluid" style="width: 0%; transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);" data-progress="${progressPct}%"></div>
                                 </div>
                                 ${finishTimeLineHtml}
                             </div>
@@ -833,6 +898,27 @@
                     </tr>
                 `;
             }).join('');
+
+            // FORCE A REFLOW DELAY TO TRIGGER SMOOTH CSS TRANSITIONS ON RE-RENDER
+            setTimeout(() => {
+                // 1. Animate Progress Bars
+                document.querySelectorAll('#leaderboardBody .progress-bar-fluid').forEach(bar => {
+                    const targetProgress = bar.getAttribute('data-progress');
+                    bar.style.width = targetProgress;
+                });
+
+                // 2. Animate Distance Numbers (0.00 -> target)
+                document.querySelectorAll('#leaderboardBody .distance-num-anim').forEach(numEl => {
+                    const targetVal = parseFloat(numEl.getAttribute('data-target')) || 0;
+                    animateValue(numEl, 0, targetVal, 1200);
+                });
+
+                // 3. Animate Distance Percentages (0.0% -> target%)
+                document.querySelectorAll('#leaderboardBody .distance-pct-anim').forEach(pctEl => {
+                    const targetPct = parseFloat(pctEl.getAttribute('data-target-pct')) || 0;
+                    animateValuePct(pctEl, 0, targetPct, 1200);
+                });
+            }, 50);
         }
 
         // 4. TAB 2: LEADERBOARD BY DISTANCE TABLE RENDERER
@@ -1074,7 +1160,7 @@
             const infoEl = document.getElementById('activityPaginationInfo');
             const prevBtn = document.getElementById('btnPrevActivityPage');
             const nextBtn = document.getElementById('btnNextActivityPage');
-            const pageNumbersEl = document.getElementById('activityPageNumbers');
+            const pageNumbersEl = document.getElementById('leaderboardPageNumbers');
 
             infoEl.innerText = totalItems > 0 ? `Showing ${startItem}–${endItem} of ${totalItems}` : `Showing 0 entries`;
 
